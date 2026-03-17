@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Booking - Aon Thonglor 7</title>
+<title>Aon Thonglor 7 Booking</title>
 
 <style>
 
@@ -52,8 +52,6 @@ gap:10px;
 
 }
 
-/* กล่องวันที่ */
-
 .date-field{
 flex:1;
 }
@@ -97,7 +95,7 @@ background:#fafafa;
 
 input[type="date"]{
 
-height:40px;
+height:42px;
 
 padding:6px 10px;
 
@@ -109,15 +107,23 @@ font-size:14px;
 
 .summary{
 
-margin-top:15px;
+margin-top:18px;
 
 background:#f7f7f7;
 
-padding:15px;
+padding:18px;
 
-border-radius:12px;
+border-radius:14px;
 
-font-size:15px;
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+font-size:18px;
+
+font-weight:600;
 
 }
 
@@ -129,7 +135,7 @@ width:100%;
 
 padding:18px;
 
-margin-top:18px;
+margin-top:20px;
 
 border:none;
 
@@ -140,6 +146,8 @@ color:white;
 
 font-size:18px;
 font-weight:600;
+
+cursor:pointer;
 
 }
 
@@ -170,8 +178,15 @@ font-weight:600;
 </div>
 
 <div class="summary">
-<div>Night: <span id="nights">0</span></div>
-<div>Total Price: <span id="price">0</span> บาท</div>
+
+<div>
+<span id="nights">0</span> Nights
+</div>
+
+<div>
+<span id="price">0</span> THB
+</div>
+
 </div>
 
 <label>Your Name</label>
@@ -201,10 +216,10 @@ const priceText = document.getElementById("price");
 
 function calculate(){
 
+if(!checkin.value || !checkout.value) return;
+
 const start = new Date(checkin.value);
 const end = new Date(checkout.value);
-
-if(checkin.value && checkout.value){
 
 const diff = end - start;
 
@@ -212,11 +227,11 @@ const nights = diff / (1000*60*60*24);
 
 if(nights > 0){
 
+const total = nights * pricePerNight;
+
 nightsText.innerText = nights;
 
-priceText.innerText = nights * pricePerNight;
-
-}
+priceText.innerText = total.toLocaleString();
 
 }
 
