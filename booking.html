@@ -55,6 +55,24 @@ margin-bottom:25px;
 
 }
 
+/* แถววันที่ */
+
+.date-row{
+
+display:flex;
+
+gap:12px;
+
+}
+
+/* กล่องวันที่ */
+
+.date-field{
+
+flex:1;
+
+}
+
 /* label */
 
 label{
@@ -65,11 +83,11 @@ color:#444;
 
 display:block;
 
-margin-top:10px;
+margin-top:12px;
 
 }
 
-/* input */
+/* input ปกติ */
 
 input{
 
@@ -87,6 +105,18 @@ font-size:16px;
 box-sizing:border-box;
 
 background:#fafafa;
+
+}
+
+/* ช่องปฏิทินให้เล็ก */
+
+input[type="date"]{
+
+height:40px;
+
+padding:6px 10px;
+
+font-size:14px;
 
 }
 
@@ -130,11 +160,19 @@ cursor:pointer;
 Booking - Aon Thonglor 7
 </div>
 
+<div class="date-row">
+
+<div class="date-field">
 <label>Check-in</label>
 <input type="date">
+</div>
 
+<div class="date-field">
 <label>Check-out</label>
 <input type="date">
+</div>
+
+</div>
 
 <label>Your Name</label>
 <input type="text" placeholder="Enter your name">
