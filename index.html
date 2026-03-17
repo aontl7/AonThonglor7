@@ -1,71 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Aon Thonglor 7</title>
 
 <style>
 
 body{
-font-family: Arial;
-background:#f4f6f8;
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+background:#f5f5f5;
 text-align:center;
-padding:40px;
+color:#111;
+}
+
+.hero img{
+width:100%;
+display:block;
 }
 
 .container{
-max-width:420px;
-margin:auto;
-background:white;
-padding:30px;
-border-radius:16px;
-box-shadow:0 10px 25px rgba(0,0,0,0.1);
+padding:30px 20px 40px;
 }
 
 h1{
-margin-bottom:10px;
+font-size:36px;
+margin:10px 0 10px 0;
+}
+
+.subtitle{
+color:#777;
+font-size:18px;
 }
 
 .price{
 font-size:28px;
-font-weight:bold;
-margin-bottom:20px;
+margin-top:18px;
 }
 
-small{
-font-size:14px;
-color:#666;
+.checkin{
+color:#777;
+margin-bottom:10px;
 }
 
-input{
-width:100%;
-padding:12px;
-margin:8px 0;
-border-radius:10px;
-border:1px solid #ddd;
+.facilities{
+color:#555;
 font-size:16px;
+margin-bottom:30px;
+line-height:1.6;
 }
 
-button{
-width:100%;
-padding:14px;
-margin-top:15px;
-border:none;
-border-radius:12px;
-background:#2ecc71;
+.button{
+display:block;
+background:#000;
 color:white;
+text-decoration:none;
+padding:18px;
+margin:12px auto;
+max-width:320px;
+border-radius:14px;
 font-size:18px;
-font-weight:bold;
-cursor:pointer;
 }
 
-button:hover{
-background:#27ae60;
+.map{
+margin-top:40px;
 }
 
-.status{
-margin-top:15px;
-font-weight:bold;
+iframe{
+width:100%;
+height:350px;
+border:0;
 }
 
 </style>
@@ -74,73 +81,47 @@ font-weight:bold;
 
 <body>
 
+<div class="hero">
+<img src="room.png">
+</div>
+
 <div class="container">
 
 <h1>Aon Thonglor 7</h1>
 
+<div class="subtitle">
+Boutique Room in Thonglor • Bangkok
+</div>
+
 <div class="price">
-1500 <small>THB / night</small>
+1500 THB / Night
 </div>
 
-<input type="date" id="checkin">
-<input type="date" id="checkout">
+<div class="checkin">
+Self Check-in 24 Hours
+</div>
 
-<input type="text" id="name" placeholder="Your Name">
-<input type="text" id="phone" placeholder="Phone">
-<input type="text" id="line" placeholder="LINE ID">
+<div class="facilities">
+Free WiFi • Aircon • Hot Shower • Fridge • Microwave
+</div>
 
-<button onclick="bookRoom()">Book Room</button>
+<a class="button" href="https://forms.gle/3F2xNqdTPaaToAZ29">
+Book Room
+</a>
 
-<div class="status" id="status"></div>
+<a class="button" href="payment.html">
+Pay Now
+</a>
+
+<div class="map">
+
+<iframe
+src="https://maps.google.com/maps?q=143/6%20Sing%20Waet%20Lom%20Alley%20Bangkok&z=17&output=embed">
+</iframe>
 
 </div>
 
-<script>
-
-const api="https://script.google.com/macros/s/AKfycbyxeDGAOHYKrp7SxKj2ST356D2IQ1K0kKbV6yxtOri3wCYJrVHe2y5c9EhycKV_iDRU/exec";
-
-function bookRoom(){
-
-let checkin=document.getElementById("checkin").value;
-let checkout=document.getElementById("checkout").value;
-let name=document.getElementById("name").value;
-let phone=document.getElementById("phone").value;
-let line=document.getElementById("line").value;
-
-if(!checkin || !checkout || !name){
-document.getElementById("status").innerHTML="Please fill required fields";
-return;
-}
-
-fetch(api,{
-method:"POST",
-body:JSON.stringify({
-checkin:checkin,
-checkout:checkout,
-name:name,
-phone:phone,
-line:line
-})
-})
-.then(res=>res.text())
-.then(data=>{
-
-if(data=="FULL"){
-document.getElementById("status").innerHTML="❌ Room Full";
-}
-
-if(data=="BOOKED"){
-document.getElementById("status").innerHTML="✅ Booking Confirmed";
-}
-
-})
-.catch(err=>{
-document.getElementById("status").innerHTML="Error connecting server";
-});
-
-}
-
-</script>
+</div>
 
 </body>
 </html>
