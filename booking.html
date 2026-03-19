@@ -297,7 +297,19 @@ const nightsText = document.getElementById("nights");
 const priceText = document.getElementById("price");
 
 const payAmount = document.getElementById("payAmount");
+checkin.addEventListener("change", () => {
+  if(isBlocked(checkin.value)){
+    alert("Date not available");
+    checkin.value="";
+  }
+});
 
+checkout.addEventListener("change", () => {
+  if(isBlocked(checkout.value)){
+    alert("Date not available");
+    checkout.value="";
+  }
+});
 /* ป้องกันวันย้อนหลัง */
 
 const today = new Date().toISOString().split("T")[0];
