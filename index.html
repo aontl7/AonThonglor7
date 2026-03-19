@@ -46,6 +46,64 @@ iframe{width:100%;height:350px;border:0;}
 </div>
 
 <script>
+
+// ฟังก์ชันจัดการวันที่
+function getLocalYYYYMMDD(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+async function fastCheckIn() {
+  const btn = document.getElementById('btnFastCheckin');
+  btn.disabled = true;
+  btn.innerText = "กำลังตรวจสอบห้องว่าง...";
+
+  // 1. วาง URL ที่ก๊อปมาล่าสุดตรงนี้ค่ะบอส
+  const googleAppsScriptURL = "https://script.google.com/macros/s/AKfycbxH7We7B-LdO6zwQ30LPgOxHIRmv0907-At52vBUtutkaNUBZHNs0XlW7oZMGSnkVCq/exec"; 
+
+  try {
+    const response = await fetch(googleAppsScriptURL);
+    const data = await response.json();
+    
+    const today = new Date();
+    const checkinStr = getLocalYYYYMMDD(today);
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    // 2. เช็กห้องว่าง (รองรับทั้งแบบ Array และ Object)
+    let bookedDates = Array.isArray(data) ? data : (data.bookedDates || []);
+    
+    if(bookedDates.includes(checkinStr)) {
+       alert("ขออภัยค่ะ ห้องพักสำหรับคืนนี้เต็มแล้ว");
+       btn.disabled = false;
+       btn.innerText = "Fast Check-in (เข้าพักวันนี้)";
+       return; 
+    }
+    
+    // 3. ดึงราคาจาก Sheets (ถ้าไม่มีใช้ 1500)
+    const currentPrice = data.price ? data.price : "1500";
+
+    const bookingData = {
+      checkin: checkinStr,
+      checkout: getLocalYYYYMMDD(tomorrow),
+      nights: 1,
+      totalPrice: currentPrice,
+      type: "Fast Check-in",
+      timestamp: new Date().toISOString()
+    };
+
+    localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
+    window.location.href = "payment.html";
+
+  } catch (error) {
+    console.error(error);
+    alert("การเชื่อมต่อมีปัญหา กรุณาลองใหม่อีกครั้ง หรือเช็กอินที่หน้าเคาน์เตอร์ค่ะ");
+    btn.disabled = false;
+    btn.innerText = "Fast Check-in (เข้าพักวันนี้)";
+  }
+}
 // ฟังก์ชันบังคับเอาวันที่เครื่องแบบชัวร์ๆ ป้องกันเบราว์เซอร์รวนเรื่อง Timezone
 function getLocalYYYYMMDD(date) {
     const y = date.getFullYear();
