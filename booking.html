@@ -169,7 +169,7 @@ function calculate(){
   const start = new Date(checkin.value + 'T00:00:00');
   const end = new Date(checkout.value + 'T00:00:00');
 
-  const diff = (end - start)/(1000*60*60*24);
+  const diff = Math.round((end - start)/(1000*60*60*24));
 
   if(diff < 1){
     // เช็คเอาท์ก่อนเช็คอินจริง ๆ ถึงเด้ง
@@ -177,7 +177,7 @@ function calculate(){
     return;
   }
 
-  if(isRangeBlocked(start, end)){
+  if(isRangeBlocked(start,end)){
     // วันถูกจองจริง ๆ ถึงเด้ง
     alert("Some dates are not available");
     checkin.value = "";
@@ -191,8 +191,11 @@ function calculate(){
   priceText.innerText = total.toLocaleString();
 }
 
+// ใช้ event ทั้ง input + change ให้มือถือ/Touch device ทำงานทันที
 checkin.addEventListener("change", calculate);
 checkout.addEventListener("change", calculate);
+checkin.addEventListener("input", calculate);
+checkout.addEventListener("input", calculate);
 
 // กด Confirm
 function confirmBooking(){
