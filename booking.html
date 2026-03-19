@@ -55,6 +55,7 @@ button{width:100%;padding:16px;margin-top:16px;border:none;border-radius:14px;ba
 </div>
 
 <script>
+// --- Elements ---
 const checkin = document.getElementById("checkin");
 const checkout = document.getElementById("checkout");
 const nightsText = document.getElementById("nights");
@@ -64,25 +65,15 @@ const inputPhone = document.getElementById("phone");
 const inputLine = document.getElementById("line");
 const holdTimeMinutes = 10;
 
-// --- bookedDates dummy / fetch from Sheet ---
-let bookedDates = []; 
-async function loadBookedDates(){
-  try{
-    const res = await fetch("https://script.google.com/macros/s/AKfycbwxKIMgfK8VQbQw3OtH2W29HcSx94SeUv_8NygBVr02jbzkuCW4Y37Xabm52AZXUEat/exec");
-    bookedDates = await res.json();
-    setInitialDates();
-  } catch(e){ console.log("Cannot load booked dates:", e); setInitialDates();}
-}
-loadBookedDates();
+// --- Dummy bookedDates ---
+let bookedDates = []; // ["2026-03-20","2026-03-21"]
 
-// --- Utilities ---
 function formatDate(d){return d.toISOString().split('T')[0];}
 function showAlert(msgEng,msgThai){alert(msgEng+"\n"+msgThai);}
 function isRangeBlocked(start,end){
   let current = new Date(start);
   while(current < end){
-    let d = formatDate(current);
-    if(bookedDates.includes(d)) return true;
+    if(bookedDates.includes(formatDate(current))) return true;
     current.setDate(current.getDate()+1);
   }
   return false;
@@ -91,45 +82,40 @@ function isRangeBlocked(start,end){
 // --- Set initial dates ---
 function setInitialDates(){
   const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate()+1);
-  const dayAfter = new Date(tomorrow);
-  dayAfter.setDate(dayAfter.getDate()+1);
+  const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate()+1);
+  const dayAfter = new Date(tomorrow); dayAfter.setDate(dayAfter.getDate()+1);
 
   checkin.value = formatDate(tomorrow);
   checkout.value = formatDate(dayAfter);
 
-  // min date
   checkin.min = formatDate(tomorrow);
   checkout.min = formatDate(tomorrow);
 
   updateSummary();
 }
 
-// --- Update summary ---
-async function updateSummary(){
-  const start = new Date(checkin.value+'T00:00:00');
-  const end = new Date(checkout.value+'T00:00:00');
-  const nights = Math.round((end-start)/(1000*60*60*24));
-  nightsText.innerText = nights>0? nights : 1;
+// --- Update summary & price ---
+function updateSummary(){
+  const start = new Date(checkin.value + "T00:00:00");
+  const end = new Date(checkout.value + "T00:00:00");
+  let nights = Math.round((end-start)/(1000*60*60*24));
+  if(nights<1) nights=1;
+  nightsText.innerText = nights;
 
-  // --- fetch price from Sheet ---
-  try{
-    const res = await fetch("https://script.google.com/macros/s/your_price_sheet_url/exec?checkin="+checkin.value+"&checkout="+checkout.value);
-    const data = await res.json();
-    const total = data.totalPrice || 0;
-    priceText.innerText = total.toLocaleString();
-  }catch(e){ priceText.innerText = 0; }
+  // --- Dummy price calculation (replace with Sheet fetch) ---
+  let pricePerNight = 1500; // ตัวอย่าง
+  let total = nights * pricePerNight;
+  priceText.innerText = total.toLocaleString();
 }
 
-// --- Listen input changes ---
+// --- Listeners ---
 checkin.addEventListener("input",updateSummary);
 checkout.addEventListener("input",updateSummary);
 
 // --- Confirm Booking ---
 function confirmBooking(){
-  const start = new Date(checkin.value+'T00:00:00');
-  const end = new Date(checkout.value+'T00:00:00');
+  const start = new Date(checkin.value + "T00:00:00");
+  const end = new Date(checkout.value + "T00:00:00");
   const today = new Date(); today.setHours(0,0,0,0);
 
   if(end <= start || start < today || isRangeBlocked(start,end)){
@@ -144,10 +130,10 @@ function confirmBooking(){
 
   showAlert("Booking Pending! Scan QR to pay","จองพักแล้ว! สแกน QR เพื่อชำระเงิน");
 
-  // --- redirect ---
+  // Redirect to payment
   window.location.href="payment.html";
 
-  // --- Optional: Save filled info ---
+  // Optional: save filled info
   const bookingData = {
     checkin: checkin.value,
     checkout: checkout.value,
@@ -158,6 +144,10 @@ function confirmBooking(){
   };
   console.log("Booking data:",bookingData);
 }
+
+// --- Initialize ---
+setInitialDates();
+
 </script>
 
 </body>
