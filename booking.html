@@ -5,79 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aon Thonglor 7 Booking</title>
 <style>
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-  background:#f2f2f2;
-}
-.hero img{
-  width:100%;
-  height:300px;
-  object-fit:cover;
-  display:block;
-}
-.booking-box{
-  width:92%;
-  max-width:520px;
-  margin:-20px auto 30px auto;
-  background:white;
-  padding:20px;
-  border-radius:18px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.08);
-}
-.date-row{
-  display:flex;
-  gap:10px;
-  margin-bottom:10px;
-}
-.date-field{ flex:1; }
-label{
-  font-size:14px;
-  font-weight:600;
-  color:#555;
-  display:block;
-  margin-bottom:4px;
-}
-input{
-  width:100%;
-  padding:14px;
-  border-radius:12px;
-  border:1px solid #ddd;
-  font-size:16px;
-  box-sizing:border-box;
-  background:#fafafa;
-}
-input[type="date"]{
-  height:40px;
-  padding:6px 10px;
-  font-size:14px;
-}
-.summary{
-  margin-top:14px;
-  background:#f5f5f5;
-  padding:16px;
-  border-radius:12px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:18px;
-  font-weight:600;
-}
-.input-group{
-  margin-top:12px;
-}
-button{
-  width:100%;
-  padding:16px;
-  margin-top:16px;
-  border:none;
-  border-radius:14px;
-  background:black;
-  color:white;
-  font-size:17px;
-  font-weight:600;
-  cursor:pointer;
-}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;background:#f2f2f2;}
+.hero img{width:100%;height:300px;object-fit:cover;display:block;}
+.booking-box{width:92%;max-width:520px;margin:-20px auto 30px auto;background:white;padding:20px;border-radius:18px;box-shadow:0 8px 20px rgba(0,0,0,0.08);}
+.date-row{display:flex;gap:10px;margin-bottom:10px;}
+.date-field{flex:1;}
+label{font-size:14px;font-weight:600;color:#555;display:block;margin-bottom:4px;}
+input{width:100%;padding:14px;border-radius:12px;border:1px solid #ddd;font-size:16px;box-sizing:border-box;background:#fafafa;}
+input[type="date"]{height:40px;padding:6px 10px;font-size:14px;}
+.summary{margin-top:14px;background:#f5f5f5;padding:16px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600;}
+.input-group{margin-top:12px;}
+button{width:100%;padding:16px;margin-top:16px;border:none;border-radius:14px;background:black;color:white;font-size:17px;font-weight:600;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -87,7 +25,6 @@ button{
 </div>
 
 <div class="booking-box">
-
 <div class="date-row">
   <div class="date-field">
     <label>Check-in</label>
@@ -115,13 +52,12 @@ button{
 </div>
 
 <button onclick="confirmBooking()">Confirm Booking</button>
-
 </div>
 
 <script>
 // --- Config ---
 const pricePerNight = 1500;
-const holdTimeMinutes = 10; // pending hold เวลา 10 นาที
+const holdTimeMinutes = 10;
 
 // --- Elements ---
 const checkin = document.getElementById("checkin");
@@ -132,115 +68,85 @@ const inputName = document.getElementById("name");
 const inputPhone = document.getElementById("phone");
 const inputLine = document.getElementById("line");
 
-// --- Utility ---
-function showAlert(msgEng, msgThai){
-  alert(msgEng + "\n" + msgThai);
-}
-function validatePhone(phone){
-  const phoneRegex = /^[0-9]{10}$/;
-  return phoneRegex.test(phone.trim());
-}
-
-// --- Dummy bookedDates จาก Google Sheet ---
-let bookedDates = []; // ["2026-03-20","2026-03-21"] เป็นต้น
+// --- Dummy bookedDates ---
+let bookedDates = []; // ["2026-03-20","2026-03-21"]
 async function loadBookedDates(){
   try{
     const res = await fetch("https://script.google.com/macros/s/AKfycbwxKIMgfK8VQbQw3OtH2W29HcSx94SeUv_8NygBVr02jbzkuCW4Y37Xabm52AZXUEat/exec");
     bookedDates = await res.json();
+    setInitialDates();
   } catch(e){ console.log("Cannot load booked dates:", e);}
 }
 loadBookedDates();
 
+// --- Utilities ---
+function showAlert(msgEng,msgThai){alert(msgEng+"\n"+msgThai);}
+function validatePhone(phone){return /^[0-9]{10}$/.test(phone.trim());}
+function formatDate(d){return d.toISOString().split('T')[0];}
 function isRangeBlocked(start,end){
   let current = new Date(start);
   while(current < end){
-    let d = current.toISOString().split("T")[0];
+    let d = formatDate(current);
     if(bookedDates.includes(d)) return true;
     current.setDate(current.getDate()+1);
   }
   return false;
 }
 
-// --- Prevent past dates ---
-const today = new Date().toISOString().split("T")[0];
-checkin.min = today;
-checkout.min = today;
-
-// --- Check Dates ---
-function checkDates(){
-  if(!checkin.value || !checkout.value) return false;
-  const start = new Date(checkin.value + 'T00:00:00');
-  const end = new Date(checkout.value + 'T00:00:00');
-
-  // เช็คเอาท์ก่อนเช็คอิน
-  if(end <= start){
-    checkin.value = "";
-    checkout.value = "";
-    nightsText.innerText = 0;
-    priceText.innerText = 0;
-    showAlert("Check-out must be after Check-in","กรุณาเลือกวันเช็คเอาท์หลังเช็คอิน");
-    return false;
+// --- Set initial dates (today or nearest available) ---
+function setInitialDates(){
+  let today = new Date();
+  let checkInDate = new Date(today);
+  for(let i=0;i<30;i++){
+    if(!bookedDates.includes(formatDate(checkInDate))) break;
+    checkInDate.setDate(checkInDate.getDate()+1);
   }
+  let checkOutDate = new Date(checkInDate);
+  checkOutDate.setDate(checkOutDate.getDate()+1);
 
-  // เช็ควันซ้ำ bookedDates
-  if(isRangeBlocked(start,end)){
-    checkin.value = "";
-    checkout.value = "";
-    nightsText.innerText = 0;
-    priceText.innerText = 0;
-    showAlert("Some dates are not available","วันที่เลือกมีผู้จองแล้ว");
-    return false;
-  }
+  checkin.value = formatDate(checkInDate);
+  checkout.value = formatDate(checkOutDate);
 
-  return true; // วันถูก
+  updateSummary();
 }
 
-// --- Calculate ---
-function calculate(){
-  nightsText.innerText = 0;
-  priceText.innerText = 0;
-  if(!checkDates()) return;
-
-  const start = new Date(checkin.value + 'T00:00:00');
-  const end = new Date(checkout.value + 'T00:00:00');
-  const diff = Math.round((end - start)/(1000*60*60*24));
-
-  nightsText.innerText = diff;
-  priceText.innerText = (diff*pricePerNight).toLocaleString();
+// --- Update summary ---
+function updateSummary(){
+  const start = new Date(checkin.value+'T00:00:00');
+  const end = new Date(checkout.value+'T00:00:00');
+  const nights = Math.round((end-start)/(1000*60*60*24));
+  nightsText.innerText = nights;
+  priceText.innerText = (nights*pricePerNight).toLocaleString();
 }
 
-checkin.addEventListener("change", calculate);
-checkout.addEventListener("change", calculate);
+// --- Allow user to change dates freely, but no alert yet ---
+checkin.addEventListener("input",updateSummary);
+checkout.addEventListener("input",updateSummary);
 
 // --- Confirm Booking ---
 function confirmBooking(){
-  if(!checkDates()) return;
+  // ตรวจช่อง input
+  if(inputName.value.trim()===""){showAlert("Please enter your name","กรุณาใส่ชื่อ");return;}
+  if(!validatePhone(inputPhone.value)){showAlert("Please enter a valid 10-digit phone number","กรุณาใส่เบอร์โทร 10 หลัก");return;}
+  if(inputLine.value.trim()===""){showAlert("Please enter your LINE ID","กรุณาใส่ LINE ID");return;}
 
-  // ตรวจ input
-  if(inputName.value.trim() === ""){
-    showAlert("Please enter your name","กรุณาใส่ชื่อ");
-    return;
-  }
-  if(!validatePhone(inputPhone.value)){
-    showAlert("Please enter a valid 10-digit phone number","กรุณาใส่เบอร์โทร 10 หลัก");
-    return;
-  }
-  if(inputLine.value.trim() === ""){
-    showAlert("Please enter your LINE ID","กรุณาใส่ LINE ID");
+  // ตรวจวันตอนกด Confirm
+  const start = new Date(checkin.value+'T00:00:00');
+  const end = new Date(checkout.value+'T00:00:00');
+
+  if(end <= start || isRangeBlocked(start,end)){
+    showAlert("Invalid date or unavailable","วันที่ไม่ถูกต้องหรือถูกจองแล้ว");
+    setInitialDates();
     return;
   }
 
-  // ครบทุกอย่าง → mark pending
+  // Pending
   const holdExpiry = new Date();
-  holdExpiry.setMinutes(holdExpiry.getMinutes() + holdTimeMinutes);
-  console.log("Room pending until:", holdExpiry.toISOString());
-
-  showAlert("Booking Pending! Scan QR to pay.","จองพักแล้ว! สแกน QR เพื่อชำระเงิน");
-
-  // redirect ไปหน้า payment.html
-  window.location.href = "payment.html";
+  holdExpiry.setMinutes(holdExpiry.getMinutes()+holdTimeMinutes);
+  console.log("Room pending until:",holdExpiry.toISOString());
+  showAlert("Booking Pending! Scan QR to pay","จองพักแล้ว! สแกน QR เพื่อชำระเงิน");
+  window.location.href="payment.html";
 }
 </script>
-
 </body>
 </html>
