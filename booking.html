@@ -252,7 +252,7 @@ Confirm Booking
   let current = new Date(start);
 
   while(current < end){
-    let d = current.toISOString().split("T")[0];
+    let d = toLocaleDateString("en-CA");
     if(bookedDates.includes(d)) return true;
     current.setDate(current.getDate()+1);
   }
