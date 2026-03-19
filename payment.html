@@ -1,66 +1,57 @@
-<<script>
-// 1. ดึงข้อมูลที่ส่งมาจากหน้า Index
-const storedData = localStorage.getItem("pendingBooking");
+<script>
+// 1. ดึงข้อมูลจากหน้าที่แล้ว
+const dataStr = localStorage.getItem("pendingBooking");
 
-if (storedData) {
-    const bookingData = JSON.parse(storedData);
-    
-    // --- ลอจิกราคาของบอสอ้น (125 + เลขห้อง + . + วันที่) ---
-    // ดึงวันที่เช็คอิน (เช่น 19)
-    const checkinDate = new Date(bookingData.checkin).getDate();
-    const dayStr = String(checkinDate).padStart(2, '0'); 
-    
-    // สมมติว่าเป็นห้อง 1 (หรือบอสจะแก้เป็นเลขอื่นตามต้องการ)
-    const roomNum = "1"; 
-    
-    // รวมร่างราคา: 125 + 1 + . + 19 = 1251.19
-    const finalPrice = "125" + roomNum + "." + dayStr;
-    
-    // 2. เจน QR Code อัตโนมัติ (ใส่เบอร์พร้อมเพย์บอสตรงนี้)
-    const myPromptPay = "0907980860"; 
-    const qrUrl = `https://promptpay.io/${myPromptPay}/${finalPrice}.png`;
-    
-    // 3. แสดงผลบนหน้าจอ (เช็ก ID ให้ตรงกับ HTML ของบอสด้วยนะ)
-    if(document.getElementById("val-total")) document.getElementById("val-total").innerText = finalPrice + " THB";
-    if(document.querySelector(".qr")) document.querySelector(".qr").src = qrUrl;
+if (dataStr) {
+    try {
+        const booking = JSON.parse(dataStr);
+        
+        // --- ลอจิกราคาบอสอ้น (125 + ห้อง1 + .วันที่) ---
+        const d = new Date(booking.checkin);
+        const day = String(d.getDate()).padStart(2, '0'); 
+        const finalPrice = "1251." + day; // ผลลัพธ์จะเป็น 1251.19
+        
+        // 2. เจน QR Code (เบอร์บอส)
+        const myPromptPay = "0907980860"; 
+        const qrUrl = "https://promptpay.io/" + myPromptPay + "/" + finalPrice + ".png";
+        
+        // 3. แสดงผลลงหน้าจอ (ดัก Error ไว้ทุกจุด)
+        const elTotal = document.getElementById("val-total");
+        if(elTotal) elTotal.innerText = finalPrice + " THB";
+        
+        const elQR = document.querySelector(".qr");
+        if(elQR) elQR.src = qrUrl;
 
-    // แปลงวันที่โชว์สวยๆ
-    function formatDisplayDate(dateStr) {
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const d = new Date(dateStr);
-        return d.getDate() + " " + months[d.getMonth()];
-    }
-    
-    if(document.getElementById("val-checkin")) document.getElementById("val-checkin").innerText = formatDisplayDate(bookingData.checkin);
-    if(document.getElementById("val-checkout")) document.getElementById("val-checkout").innerText = formatDisplayDate(bookingData.checkout);
-    if(document.getElementById("val-nights")) document.getElementById("val-nights").innerText = bookingData.nights;
+        const elIn = document.getElementById("val-checkin");
+        if(elIn) elIn.innerText = booking.checkin;
 
-    // อัปเดตข้อมูลกลับไปในเครื่อง เผื่อกดส่งแจ้งโอน
-    bookingData.totalPrice = finalPrice;
-    localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
+        const elNights = document.getElementById("val-nights");
+        if(elNights) elNights.innerText = booking.nights || "1";
 
-    // --- ระบบนาฬิกานับถอยหลัง 10 นาที ---
-    const bookingTime = new Date(bookingData.timestamp).getTime();
-    const expireTime = bookingTime + (10 * 60 * 1000);
-    const timerElement = document.getElementById("timer");
-    
-    if(timerElement) {
-        let countdown = setInterval(function(){
-            const now = new Date().getTime();
-            const distance = expireTime - now;
-            if(distance < 0){
-                clearInterval(countdown);
-                timerElement.innerHTML = "QR Expired";
-                return;
-            }
-            let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            timerElement.innerHTML = "Time left: " + minutes + ":" + (seconds < 10 ? "0"+seconds : seconds);
-        }, 1000);
+        // 4. อัปเดตข้อมูลกลับเข้าเครื่อง
+        booking.totalPrice = finalPrice;
+        localStorage.setItem("pendingBooking", JSON.stringify(booking));
+
+        // --- นับถอยหลัง (แบบเรียบง่าย ไม่ระเบิดแน่นอน) ---
+        let timeLeft = 600; // 10 นาที
+        const elTimer = document.getElementById("timer");
+        if(elTimer) {
+            setInterval(function() {
+                if(timeLeft <= 0) { elTimer.innerText = "Expired"; return; }
+                timeLeft--;
+                let m = Math.floor(timeLeft / 60);
+                let s = timeLeft % 60;
+                elTimer.innerText = "Time left: " + m + ":" + (s < 10 ? "0"+s : s);
+            }, 1000);
+        }
+    } catch (e) {
+        console.error("Data error", e);
+        // ถ้าข้อมูลเน่า ให้ล้างเครื่องแล้วกลับหน้าแรก
+        localStorage.removeItem("pendingBooking");
+        // window.location.href = "index.html"; 
     }
 } else {
-    // ถ้าไม่มีข้อมูล ให้เด้งกลับไปหน้าแรก
-    window.location.href = "index.html";
+    // ถ้าไม่มีข้อมูลเลย ให้กลับหน้าแรก
+    // window.location.href = "index.html";
 }
 </script>
-
