@@ -119,8 +119,31 @@ button{
 </div>
 
 <script>
-// วันถูกจองแล้วจาก Google Sheet / API
-let bookedDates = [];
+// --- Config ---
+const pricePerNight = 1500;
+const holdTimeMinutes = 10; // pending hold เวลา 10 นาที
+
+// --- Elements ---
+const checkin = document.getElementById("checkin");
+const checkout = document.getElementById("checkout");
+const nightsText = document.getElementById("nights");
+const priceText = document.getElementById("price");
+const inputName = document.getElementById("name");
+const inputPhone = document.getElementById("phone");
+const inputLine = document.getElementById("line");
+
+// --- Utility ---
+function showAlert(msgEng, msgThai){
+  alert(msgEng + "\n" + msgThai);
+}
+
+function validatePhone(phone){
+  const phoneRegex = /^[0-9]{10}$/;
+  return phoneRegex.test(phone.trim());
+}
+
+// --- Dummy bookedDates จาก Google Sheet ---
+let bookedDates = []; // ["2026-03-20","2026-03-21"] เป็นต้น
 async function loadBookedDates(){
   try{
     const res = await fetch("https://script.google.com/macros/s/AKfycbwxKIMgfK8VQbQw3OtH2W29HcSx94SeUv_8NygBVr02jbzkuCW4Y37Xabm52AZXUEat/exec");
@@ -129,7 +152,7 @@ async function loadBookedDates(){
 }
 loadBookedDates();
 
-function isRangeBlocked(start, end){
+function isRangeBlocked(start,end){
   let current = new Date(start);
   while(current < end){
     let d = current.toISOString().split("T")[0];
@@ -139,33 +162,12 @@ function isRangeBlocked(start, end){
   return false;
 }
 
-const pricePerNight = 1500;
-const checkin = document.getElementById("checkin");
-const checkout = document.getElementById("checkout");
-const nightsText = document.getElementById("nights");
-const priceText = document.getElementById("price");
-const inputName = document.getElementById("name");
-const inputPhone = document.getElementById("phone");
-const inputLine = document.getElementById("line");
-
-// ป้องกันวันย้อนหลัง
+// --- Prevent past dates ---
 const today = new Date().toISOString().split("T")[0];
 checkin.min = today;
 checkout.min = today;
 
-// popup 2 พาสา
-function showAlert(msgEng, msgThai){
-  alert(msgEng + "\n" + msgThai);
-}
-
-// ตรวจเบอร์โทร
-function validatePhone(phone){
-  phone = phone.trim();
-  const phoneRegex = /^[0-9]{10}$/;
-  return phoneRegex.test(phone);
-}
-
-// คำนวณคืนและราคา
+// --- Calculate ---
 function calculate(){
   nightsText.innerText = 0;
   priceText.innerText = 0;
@@ -174,24 +176,15 @@ function calculate(){
 
   const start = new Date(checkin.value + 'T00:00:00');
   const end = new Date(checkout.value + 'T00:00:00');
-
   const diff = Math.round((end - start)/(1000*60*60*24));
 
-  if(diff < 1){
-    showAlert("Check-out must be after Check-in","กรุณาเลือกวันเช็คเอาท์หลังเช็คอิน");
-    return;
+  if(diff > 0){
+    nightsText.innerText = diff;
+    priceText.innerText = (diff*pricePerNight).toLocaleString();
+  } else {
+    nightsText.innerText = 0;
+    priceText.innerText = 0;
   }
-
-  if(isRangeBlocked(start,end)){
-    showAlert("Some dates are not available","วันที่เลือกมีผู้จองแล้ว");
-    checkin.value = "";
-    checkout.value = "";
-    return;
-  }
-
-  const total = diff * pricePerNight;
-  nightsText.innerText = diff;
-  priceText.innerText = total.toLocaleString();
 }
 
 checkin.addEventListener("input", calculate);
@@ -199,17 +192,40 @@ checkout.addEventListener("input", calculate);
 checkin.addEventListener("change", calculate);
 checkout.addEventListener("change", calculate);
 
-// Confirm Booking
+// --- Confirm Booking ---
 function confirmBooking(){
-  calculate(); // คำนวณก่อน
+  calculate(); // update คืน + ราคา
+
+  // ตรวจวัน
   if(!checkin.value || !checkout.value){
     showAlert("Please select check-in and check-out","กรุณาเลือกวันเช็คอิน/เช็คเอาท์");
     return;
   }
-  if(nightsText.innerText == 0){
+
+  const start = new Date(checkin.value + 'T00:00:00');
+  const end = new Date(checkout.value + 'T00:00:00');
+  const diff = Math.round((end-start)/(1000*60*60*24));
+
+  if(diff < 1){
+    // วันผิด → เคลียร์ input ทั้งสอง
+    checkin.value = "";
+    checkout.value = "";
+    nightsText.innerText = 0;
+    priceText.innerText = 0;
     showAlert("Check-out must be after Check-in","กรุณาเลือกวันเช็คเอาท์หลังเช็คอิน");
     return;
   }
+
+  if(isRangeBlocked(start,end)){
+    checkin.value = "";
+    checkout.value = "";
+    nightsText.innerText = 0;
+    priceText.innerText = 0;
+    showAlert("Some dates are not available","วันที่เลือกมีผู้จองแล้ว");
+    return;
+  }
+
+  // ตรวจ input
   if(inputName.value.trim() === ""){
     showAlert("Please enter your name","กรุณาใส่ชื่อ");
     return;
@@ -223,7 +239,14 @@ function confirmBooking(){
     return;
   }
 
-  // ครบทุกอย่าง → redirect
+  // ครบทุกอย่าง → mark pending
+  const holdExpiry = new Date();
+  holdExpiry.setMinutes(holdExpiry.getMinutes() + holdTimeMinutes);
+  console.log("Room pending until:", holdExpiry.toISOString());
+
+  showAlert("Booking Pending! Scan QR to pay.","จองพักแล้ว! สแกน QR เพื่อชำระเงิน");
+
+  // redirect ไปหน้า payment.html
   window.location.href = "payment.html";
 }
 </script>
