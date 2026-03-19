@@ -1,188 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Aon Thonglor 7 Booking</title>
-
 <style>
-
 body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-background:#f2f2f2;
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background:#f2f2f2;
 }
-
-/* รูปด้านบน */
-
 .hero img{
-width:100%;
-height:300px;
-object-fit:cover;
-display:block;
+  width:100%;
+  height:300px;
+  object-fit:cover;
+  display:block;
 }
-
-/* กล่อง */
-
 .booking-box{
-
-width:92%;
-max-width:520px;
-
-margin:-20px auto 30px auto;
-
-background:white;
-
-padding:20px;
-
-border-radius:18px;
-
-box-shadow:0 8px 20px rgba(0,0,0,0.08);
-
+  width:92%;
+  max-width:520px;
+  margin:-20px auto 30px auto;
+  background:white;
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
 }
-
-/* วันที่ */
-
 .date-row{
-
-display:flex;
-gap:10px;
-
-margin-bottom:10px;
-
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
 }
-
-.date-field{
-flex:1;
-}
-
+.date-field{ flex:1; }
 label{
-
-font-size:14px;
-font-weight:600;
-color:#555;
-
-display:block;
-
-margin-bottom:4px;
-
+  font-size:14px;
+  font-weight:600;
+  color:#555;
+  display:block;
+  margin-bottom:4px;
 }
-
 input{
-
-width:100%;
-
-padding:14px;
-
-border-radius:12px;
-border:1px solid #ddd;
-
-font-size:16px;
-
-box-sizing:border-box;
-
-background:#fafafa;
-
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  font-size:16px;
+  box-sizing:border-box;
+  background:#fafafa;
 }
-
 input[type="date"]{
-
-height:40px;
-
-padding:6px 10px;
-
-font-size:14px;
-
+  height:40px;
+  padding:6px 10px;
+  font-size:14px;
 }
-
-/* summary */
-
 .summary{
-
-margin-top:14px;
-
-background:#f5f5f5;
-
-padding:16px;
-
-border-radius:12px;
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-font-size:18px;
-
-font-weight:600;
-
+  margin-top:14px;
+  background:#f5f5f5;
+  padding:16px;
+  border-radius:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:18px;
+  font-weight:600;
 }
-
-/* input */
-
 .input-group{
-
-margin-top:12px;
-
+  margin-top:12px;
 }
-
-/* ปุ่ม */
-
 button{
-
-width:100%;
-
-padding:16px;
-
-margin-top:16px;
-
-border:none;
-
-border-radius:14px;
-
-background:black;
-color:white;
-
-font-size:17px;
-font-weight:600;
-
-cursor:pointer;
-
+  width:100%;
+  padding:16px;
+  margin-top:16px;
+  border:none;
+  border-radius:14px;
+  background:black;
+  color:white;
+  font-size:17px;
+  font-weight:600;
+  cursor:pointer;
 }
-
-/* payment */
-
 .payment{
-
-display:none;
-
-margin-top:20px;
-
-background:#f7f7f7;
-
-padding:20px;
-
-border-radius:14px;
-
-text-align:center;
-
+  display:none;
+  margin-top:20px;
+  background:#f7f7f7;
+  padding:20px;
+  border-radius:14px;
+  text-align:center;
 }
-
-.payment img{
-
-width:220px;
-
-margin-top:10px;
-
+.payment img{ width:220px; margin-top:10px; }
+#errorMsg {
+  color:red;
+  margin-top:8px;
+  font-size:14px;
 }
-
 </style>
-
 </head>
-
 <body>
 
 <div class="hero">
@@ -192,29 +103,25 @@ margin-top:10px;
 <div class="booking-box">
 
 <div class="date-row">
-
 <div class="date-field">
 <label>Check-in</label>
 <input type="date" id="checkin">
 </div>
-
 <div class="date-field">
 <label>Check-out</label>
 <input type="date" id="checkout">
 </div>
-
 </div>
 
-<div class="summary">
+<div id="errorMsg"></div>
 
+<div class="summary">
 <div>
 <span id="nights">0</span> Nights
 </div>
-
 <div>
 <span id="price">0</span> THB
 </div>
-
 </div>
 
 <div class="input-group">
@@ -234,132 +141,103 @@ Confirm Booking
 </button>
 
 <div class="payment" id="paymentBox">
-
 <h3>Scan to Pay</h3>
-
 <p>Total <b><span id="payAmount">0</span> THB</b></p>
-
 <img src="promptpayQR.png">
-
 <p>After payment please add LINE: <b>Aon.kj</b></p>
-
 </div>
 
 </div>
 
 <script>
-  function isRangeBlocked(start, end){
-  let current = new Date(start);
+// วันจองที่ถูกจองแล้ว (ดึงจาก Google Sheet หรือ API)
+let bookedDates = [];
 
+// โหลดวันจองจาก Google Sheet
+async function loadBookedDates(){
+  try{
+    const res = await fetch("https://script.google.com/macros/s/AKfycbwxKIMgfK8VQbQw3OtH2W29HcSx94SeUv_8NygBVr02jbzkuCW4Y37Xabm52AZXUEat/exec");
+    bookedDates = await res.json();
+  } catch(e){ console.log("Cannot load booked dates:", e);}
+}
+loadBookedDates();
+
+// ตรวจสอบว่าช่วงวันที่เลือกมีวันถูกจองแล้วหรือไม่
+function isRangeBlocked(start, end){
+  let current = new Date(start);
   while(current < end){
-    let d = current.toLocaleDateString("en-CA");
+    let d = current.toISOString().split("T")[0];
     if(bookedDates.includes(d)) return true;
     current.setDate(current.getDate()+1);
   }
-
   return false;
 }
-let bookedDates = [];
-
-async function loadBookedDates(){
-  const res = await fetch("https://script.google.com/macros/s/AKfycbwxKIMgfK8VQbQw3OtH2W29HcSx94SeUv_8NygBVr02jbzkuCW4Y37Xabm52AZXUEat/exec");
-  bookedDates = await res.json();
-}
-
-loadBookedDates();
-
-
-  // เดี๋ยวค่อยดึงจากชีท
-
-function isBlocked(date){
-  return bookedDates.includes(date);
-}
-
 
 const pricePerNight = 1500;
-
 const checkin = document.getElementById("checkin");
 const checkout = document.getElementById("checkout");
-
 const nightsText = document.getElementById("nights");
 const priceText = document.getElementById("price");
-
 const payAmount = document.getElementById("payAmount");
-checkin.addEventListener("change", () => {
-  if(isBlocked(checkin.value)){
-    alert("Date not available");
-    checkin.value="";
-  }
-});
+const errorMsg = document.getElementById("errorMsg");
 
-checkout.addEventListener("change", () => {
-  if(isBlocked(checkout.value)){
-    alert("Date not available");
-    checkout.value="";
-  }
-});
-/* ป้องกันวันย้อนหลัง */
-
+// ป้องกันวันย้อนหลัง
 const today = new Date().toISOString().split("T")[0];
 checkin.min = today;
 checkout.min = today;
 
+// คำนวณราคาและจำนวนคืน
 function calculate(){
-
-if(!checkin.value || !checkout.value) return;
-
-const start = new Date(checkin.value);
-const end = new Date(checkout.value);
-
-const diff = end - start;
-
-const nights = diff / (1000*60*60*24);
-
-if(nights <= 0){
-
-alert("Check-out must be after Check-in");
-
-checkout.value="";
-
-return;
-
-}
-  if(isRangeBlocked(start, end)){
-  alert("Some dates are not available");
+  errorMsg.textContent = '';
   nightsText.innerText = 0;
   priceText.innerText = 0;
   payAmount.innerText = 0;
-  return;
+
+  if(!checkin.value || !checkout.value) return;
+
+  // Normalize เวลาเป็นเที่ยงคืน
+  const start = new Date(checkin.value + 'T00:00:00');
+  const end = new Date(checkout.value + 'T00:00:00');
+
+  const diffTime = end.getTime() - start.getTime();
+  const nights = diffTime / (1000*60*60*24);
+
+  if(nights < 1){
+    // ข้อความใต้ฟอร์ม ไม่ alert
+    errorMsg.textContent = "Check-out must be after Check-in";
+    return;
+  }
+
+  if(isRangeBlocked(start, end)){
+    alert("Some dates are not available"); // เด้ง alert เฉพาะวันซ้ำจริง
+    checkin.value = "";
+    checkout.value = "";
+    return;
+  }
+
+  const total = nights * pricePerNight;
+  nightsText.innerText = nights;
+  priceText.innerText = total.toLocaleString();
+  payAmount.innerText = total.toLocaleString();
 }
-const total = nights * pricePerNight;
 
-nightsText.innerText = nights;
+checkin.addEventListener("change", calculate);
+checkout.addEventListener("change", calculate);
 
-priceText.innerText = total.toLocaleString();
-
-payAmount.innerText = total.toLocaleString();
-
-}
-
-checkin.addEventListener("change",calculate);
-checkout.addEventListener("change",calculate);
-
+// กด Confirm
 function confirmBooking(){
+  if(!checkin.value || !checkout.value){
+    alert("Please select check-in and check-out"); // เด้ง alert ถ้ายังไม่ได้เลือกวัน
+    return;
+  }
 
-const nights = nightsText.innerText;
+  if(nightsText.innerText == 0){
+    errorMsg.textContent = "Check-out must be after Check-in"; // ถ้าเลือกวันแล้วแต่ผิดลำดับ
+    return;
+  }
 
-if(nights == 0){
-
-alert("Please select check-in and check-out");
-
-return;
-
+  document.getElementById("paymentBox").style.display="block";
 }
-
-document.getElementById("paymentBox").style.display="block";
-
-}
-
 </script>
 
 </body>
