@@ -248,6 +248,17 @@ Confirm Booking
 </div>
 
 <script>
+  function isRangeBlocked(start, end){
+  let current = new Date(start);
+
+  while(current < end){
+    let d = current.toISOString().split("T")[0];
+    if(bookedDates.includes(d)) return true;
+    current.setDate(current.getDate()+1);
+  }
+
+  return false;
+}
 let bookedDates = [];
 
 async function loadBookedDates(){
@@ -313,7 +324,10 @@ checkout.value="";
 return;
 
 }
-
+  if(isRangeBlocked(start, end)){
+  alert("Some dates are not available");
+  return;
+}
 const total = nights * pricePerNight;
 
 nightsText.innerText = nights;
