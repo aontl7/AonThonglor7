@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aon Thonglor 7 Booking</title>
+<title>Book in Advance - Aon Thonglor 7</title>
 <style>
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;background:#f2f2f2;}
 .hero img{width:100%;height:300px;object-fit:cover;display:block;}
@@ -25,38 +25,37 @@ button{width:100%;padding:16px;margin-top:16px;border:none;border-radius:14px;ba
 </div>
 
 <div class="booking-box">
-<div class="date-row">
-  <div class="date-field">
-    <label>Check-in</label>
-    <input type="date" id="checkin">
+  <div class="date-row">
+    <div class="date-field">
+      <label>Check-in</label>
+      <input type="date" id="checkin">
+    </div>
+    <div class="date-field">
+      <label>Check-out</label>
+      <input type="date" id="checkout">
+    </div>
   </div>
-  <div class="date-field">
-    <label>Check-out</label>
-    <input type="date" id="checkout">
+
+  <div class="summary">
+    <div><span id="nights">1</span> Nights</div>
+    <div><span id="price">0</span> THB</div>
   </div>
-</div>
 
-<div class="summary">
-  <div><span id="nights">0</span> Nights</div>
-  <div><span id="price">0</span> THB</div>
-</div>
+  <div class="input-group">
+    <input type="text" placeholder="Your name" id="name">
+  </div>
+  <div class="input-group">
+    <input type="text" placeholder="Phone number" id="phone">
+  </div>
+  <div class="input-group">
+    <input type="text" placeholder="LINE ID" id="line">
+  </div>
 
-<div class="input-group">
-  <input type="text" placeholder="Your name" id="name">
-</div>
-<div class="input-group">
-  <input type="text" placeholder="Phone number" id="phone">
-</div>
-<div class="input-group">
-  <input type="text" placeholder="LINE ID" id="line">
-</div>
-
-<button onclick="confirmBooking()">Confirm Booking</button>
+  <button onclick="confirmBooking()">Book in Advance</button>
 </div>
 
 <script>
 // --- Config ---
-const pricePerNight = 1500;
 const holdTimeMinutes = 10;
 
 // --- Elements ---
@@ -70,6 +69,7 @@ const inputLine = document.getElementById("line");
 
 // --- Dummy bookedDates ---
 let bookedDates = []; // ["2026-03-20","2026-03-21"]
+
 async function loadBookedDates(){
   try{
     const res = await fetch("https://script.google.com/macros/s/AKfycbwxKIMgfK8VQbQw3OtH2W29HcSx94SeUv_8NygBVr02jbzkuCW4Y37Xabm52AZXUEat/exec");
@@ -81,7 +81,6 @@ loadBookedDates();
 
 // --- Utilities ---
 function showAlert(msgEng,msgThai){alert(msgEng+"\n"+msgThai);}
-function validatePhone(phone){return /^[0-9]{10}$/.test(phone.trim());}
 function formatDate(d){return d.toISOString().split('T')[0];}
 function isRangeBlocked(start,end){
   let current = new Date(start);
@@ -93,16 +92,13 @@ function isRangeBlocked(start,end){
   return false;
 }
 
-// --- Set initial dates (today or nearest available) ---
+// --- Set initial dates (Check-in tomorrow) ---
 function setInitialDates(){
   let today = new Date();
   let checkInDate = new Date(today);
-  for(let i=0;i<30;i++){
-    if(!bookedDates.includes(formatDate(checkInDate))) break;
-    checkInDate.setDate(checkInDate.getDate()+1);
-  }
+  checkInDate.setDate(checkInDate.getDate()+1); // วันพรุ่งนี้
   let checkOutDate = new Date(checkInDate);
-  checkOutDate.setDate(checkOutDate.getDate()+1);
+  checkOutDate.setDate(checkOutDate.getDate()+1); // 1 คืน
 
   checkin.value = formatDate(checkInDate);
   checkout.value = formatDate(checkOutDate);
@@ -111,42 +107,65 @@ function setInitialDates(){
 }
 
 // --- Update summary ---
-function updateSummary(){
+async function updateSummary(){
   const start = new Date(checkin.value+'T00:00:00');
   const end = new Date(checkout.value+'T00:00:00');
   const nights = Math.round((end-start)/(1000*60*60*24));
   nightsText.innerText = nights;
-  priceText.innerText = (nights*pricePerNight).toLocaleString();
+
+  // --- ดึงราคา dynamic จาก Sheet ---
+  try{
+    const res = await fetch("https://script.google.com/macros/s/your_price_sheet_url/exec?checkin="+checkin.value+"&checkout="+checkout.value);
+    const data = await res.json();
+    const total = data.totalPrice || 0;
+    priceText.innerText = total.toLocaleString();
+  }catch(e){
+    console.log("Cannot fetch price, set 0");
+    priceText.innerText = 0;
+  }
 }
 
-// --- Allow user to change dates freely, but no alert yet ---
+// --- Allow user to edit dates freely ---
 checkin.addEventListener("input",updateSummary);
 checkout.addEventListener("input",updateSummary);
 
 // --- Confirm Booking ---
 function confirmBooking(){
-  // ตรวจช่อง input
-  if(inputName.value.trim()===""){showAlert("Please enter your name","กรุณาใส่ชื่อ");return;}
-  if(!validatePhone(inputPhone.value)){showAlert("Please enter a valid 10-digit phone number","กรุณาใส่เบอร์โทร 10 หลัก");return;}
-  if(inputLine.value.trim()===""){showAlert("Please enter your LINE ID","กรุณาใส่ LINE ID");return;}
-
-  // ตรวจวันตอนกด Confirm
   const start = new Date(checkin.value+'T00:00:00');
   const end = new Date(checkout.value+'T00:00:00');
 
-  if(end <= start || isRangeBlocked(start,end)){
+  // ตรวจเฉพาะวันผิด/เต็ม/ย้อนหลัง
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  if(end <= start || start < today || isRangeBlocked(start,end)){
     showAlert("Invalid date or unavailable","วันที่ไม่ถูกต้องหรือถูกจองแล้ว");
-    setInitialDates();
+    setInitialDates(); // reset เป็นวันพรุ่งนี้
     return;
   }
 
-  // Pending
+  // --- Pending ---
   const holdExpiry = new Date();
-  holdExpiry.setMinutes(holdExpiry.getMinutes()+holdTimeMinutes);
-  console.log("Room pending until:",holdExpiry.toISOString());
+  holdExpiry.setMinutes(holdExpiry.getMinutes() + holdTimeMinutes);
+  console.log("Room pending until:", holdExpiry.toISOString());
+
+  // Alert 2 ภาษา
   showAlert("Booking Pending! Scan QR to pay","จองพักแล้ว! สแกน QR เพื่อชำระเงิน");
-  window.location.href="payment.html";
+
+  // --- Redirect to payment.html ---
+  window.location.href = "payment.html";
+
+  // --- Optional: บันทึกข้อมูลลง Sheet ถ้ามี ---
+  const bookingData = {
+    checkin: checkin.value,
+    checkout: checkout.value,
+    name: inputName.value.trim(),
+    phone: inputPhone.value.trim(),
+    line: inputLine.value.trim(),
+    timestamp: new Date().toISOString()
+  };
+  console.log("Booking data (to save if provided):", bookingData);
 }
 </script>
+
 </body>
 </html>
