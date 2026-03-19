@@ -248,10 +248,17 @@ Confirm Booking
 </div>
 
 <script>
-const bookedDates = [
-  "2026-03-20",
-  "2026-03-21"
-]; // เดี๋ยวค่อยดึงจากชีท
+let bookedDates = [];
+
+async function loadBookedDates(){
+  const res = await fetch(https://script.google.com/macros/s/AKfycbwxKIMgfK8VQbQw3OtH2W29HcSx94SeUv_8NygBVr02jbzkuCW4Y37Xabm52AZXUEat/exec);
+  bookedDates = await res.json();
+}
+
+loadBookedDates();
+
+
+  // เดี๋ยวค่อยดึงจากชีท
 
 function isBlocked(date){
   return bookedDates.includes(date);
