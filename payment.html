@@ -73,6 +73,7 @@ body{
     border:none;
     border-radius:12px;
     margin-top:10px;
+    cursor: pointer;
 }
 
 .primary{
@@ -106,24 +107,24 @@ body{
     <div class="row">
         <div class="item">
             <div class="label">Check-in</div>
-            <div class="value">20 Mar</div>
+            <div class="value" id="val-checkin">...</div>
         </div>
 
         <div class="item">
             <div class="label">Check-out</div>
-            <div class="value">21 Mar</div>
+            <div class="value" id="val-checkout">...</div>
         </div>
     </div>
 
     <div class="row">
         <div class="item">
             <div class="label">Nights</div>
-            <div class="value">1</div>
+            <div class="value" id="val-nights">...</div>
         </div>
 
         <div class="item">
             <div class="label">Total</div>
-            <div class="value">1,500 THB</div>
+            <div class="value" id="val-total">... THB</div>
         </div>
     </div>
 
@@ -134,7 +135,7 @@ body{
 
 <div id="timer" class="timer">Time left: 10:00</div>
 
-<a href="waiting.html">
+<a href="waiting.html" style="text-decoration:none;">
     <button class="btn primary">I've Paid</button>
 </a>
 
@@ -145,28 +146,46 @@ Refresh QR
 </div>
 
 <script>
+// 🔥 ดึงข้อมูลจากหน้าที่แล้ว (LocalStorage) มาแสดงผลอัตโนมัติ
+const storedData = localStorage.getItem("pendingBooking");
+
+if (storedData) {
+    const bookingData = JSON.parse(storedData);
+    
+    // ฟังก์ชันช่วยแปลงวันที่จากตัวเลข (2026-03-19) เป็นตัวอักษรสวยๆ (19 Mar)
+    function formatDisplayDate(dateStr) {
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const d = new Date(dateStr);
+        return d.getDate() + " " + months[d.getMonth()];
+    }
+
+    // เอาข้อมูลไปยัดใส่กล่องข้อความ
+    document.getElementById("val-checkin").innerText = formatDisplayDate(bookingData.checkin);
+    document.getElementById("val-checkout").innerText = formatDisplayDate(bookingData.checkout);
+    document.getElementById("val-nights").innerText = bookingData.nights;
+    
+    // ใส่คอมม่าให้ยอดเงิน
+    const priceNum = parseInt(bookingData.totalPrice);
+    document.getElementById("val-total").innerText = priceNum.toLocaleString() + " THB";
+}
+
 // 🔥 ตั้งเวลาเริ่มต้น (10 นาที = 600 วินาที)
 let timeLeft = 600;
-
 let timerElement = document.getElementById("timer");
 
 let countdown = setInterval(function(){
-
     let minutes = Math.floor(timeLeft / 60);
     let seconds = timeLeft % 60;
 
     // เติม 0 หน้าเลข
     seconds = seconds < 10 ? "0" + seconds : seconds;
-
     timerElement.innerHTML = "Time left: " + minutes + ":" + seconds;
-
     timeLeft--;
 
     if(timeLeft < 0){
         clearInterval(countdown);
         timerElement.innerHTML = "QR Expired";
     }
-
 }, 1000);
 </script>
 
