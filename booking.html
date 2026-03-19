@@ -45,7 +45,7 @@ button{width:100%;padding:16px;margin-top:16px;border:none;border-radius:14px;ba
     <input type="text" placeholder="Your name" id="name">
   </div>
   <div class="input-group">
-    <input type="text" placeholder="Phone number" id="phone">
+    <input type="tel" placeholder="Phone number" id="phone">
   </div>
   <div class="input-group">
     <input type="text" placeholder="LINE ID" id="line">
@@ -66,7 +66,7 @@ const inputLine = document.getElementById("line");
 const holdTimeMinutes = 10;
 
 // --- Dummy bookedDates ---
-let bookedDates = []; // ["2026-03-20","2026-03-21"]
+let bookedDates = []; // e.g., ["2026-03-20","2026-03-21"]
 
 function formatDate(d){return d.toISOString().split('T')[0];}
 function showAlert(msgEng,msgThai){alert(msgEng+"\n"+msgThai);}
@@ -89,7 +89,7 @@ function setInitialDates(){
   checkout.value = formatDate(dayAfter);
 
   checkin.min = formatDate(tomorrow);
-  checkout.min = formatDate(tomorrow);
+  checkout.min = formatDate(dayAfter);
 
   updateSummary();
 }
@@ -98,19 +98,34 @@ function setInitialDates(){
 function updateSummary(){
   const start = new Date(checkin.value + "T00:00:00");
   const end = new Date(checkout.value + "T00:00:00");
+  
   let nights = Math.round((end-start)/(1000*60*60*24));
-  if(nights<1) nights=1;
+  if(nights < 1) nights = 1;
   nightsText.innerText = nights;
 
-  // --- Dummy price calculation (replace with Sheet fetch) ---
-  let pricePerNight = 1500; // ตัวอย่าง
+  let pricePerNight = 1500; 
   let total = nights * pricePerNight;
   priceText.innerText = total.toLocaleString();
 }
 
-// --- Listeners ---
-checkin.addEventListener("input",updateSummary);
-checkout.addEventListener("input",updateSummary);
+// --- Smart Date Listeners ---
+checkin.addEventListener("change", () => {
+  if (checkin.value >= checkout.value) {
+    let newOut = new Date(checkin.value);
+    newOut.setDate(newOut.getDate() + 1);
+    checkout.value = formatDate(newOut);
+  }
+  updateSummary();
+});
+
+checkout.addEventListener("change", () => {
+  if (checkout.value <= checkin.value) {
+    let newIn = new Date(checkout.value);
+    newIn.setDate(newIn.getDate() - 1);
+    checkin.value = formatDate(newIn);
+  }
+  updateSummary();
+});
 
 // --- Confirm Booking ---
 function confirmBooking(){
@@ -118,31 +133,42 @@ function confirmBooking(){
   const end = new Date(checkout.value + "T00:00:00");
   const today = new Date(); today.setHours(0,0,0,0);
 
+  // Validate Dates
   if(end <= start || start < today || isRangeBlocked(start,end)){
     showAlert("Invalid date or unavailable","วันที่ไม่ถูกต้องหรือถูกจองแล้ว");
     setInitialDates();
     return;
   }
 
-  const holdExpiry = new Date();
-  holdExpiry.setMinutes(holdExpiry.getMinutes() + holdTimeMinutes);
-  console.log("Room pending until:", holdExpiry.toISOString());
+  // Validate Inputs
+  const nameVal = inputName.value.trim();
+  const phoneVal = inputPhone.value.trim();
+  const lineVal = inputLine.value.trim();
+
+  if(!nameVal || !phoneVal || !lineVal) {
+    showAlert("Please fill in all information", "กรุณากรอก ชื่อ เบอร์โทร และ LINE ID ให้ครบถ้วน");
+    return;
+  }
+
+  // Prepare Data
+  const bookingData = {
+    checkin: checkin.value,
+    checkout: checkout.value,
+    nights: nightsText.innerText,
+    totalPrice: priceText.innerText.replace(/,/g, ''),
+    name: nameVal,
+    phone: phoneVal,
+    line: lineVal,
+    timestamp: new Date().toISOString()
+  };
+
+  // Save to LocalStorage BEFORE redirecting
+  localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
 
   showAlert("Booking Pending! Scan QR to pay","จองพักแล้ว! สแกน QR เพื่อชำระเงิน");
 
   // Redirect to payment
   window.location.href="payment.html";
-
-  // Optional: save filled info
-  const bookingData = {
-    checkin: checkin.value,
-    checkout: checkout.value,
-    name: inputName.value.trim(),
-    phone: inputPhone.value.trim(),
-    line: inputLine.value.trim(),
-    timestamp: new Date().toISOString()
-  };
-  console.log("Booking data:",bookingData);
 }
 
 // --- Initialize ---
