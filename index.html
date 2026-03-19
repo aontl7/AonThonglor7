@@ -46,8 +46,7 @@ iframe{width:100%;height:350px;border:0;}
 </div>
 
 <script>
-
-// ฟังก์ชันจัดการวันที่
+// ฟังก์ชันจัดการวันที่ให้ตรงกับ Timezone ไทย
 function getLocalYYYYMMDD(date) {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -60,29 +59,27 @@ async function fastCheckIn() {
   btn.disabled = true;
   btn.innerText = "กำลังตรวจสอบห้องว่าง...";
 
-  // 1. วาง URL ที่ก๊อปมาล่าสุดตรงนี้ค่ะบอส
+  // URL ตัวล่าสุดที่บอสเพิ่งก๊อปมา
   const googleAppsScriptURL = "https://script.google.com/macros/s/AKfycbxH7We7B-LdO6zwQ30LPgOxHIRmv0907-At52vBUtutkaNUBZHNs0XlW7oZMGSnkVCq/exec"; 
 
   try {
     const response = await fetch(googleAppsScriptURL);
-    const data = await response.json();
+    const data = await response.json(); // รับข้อมูล {price: "125x.xx", bookedDates: []}
     
     const today = new Date();
     const checkinStr = getLocalYYYYMMDD(today);
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
 
-    // 2. เช็กห้องว่าง (รองรับทั้งแบบ Array และ Object)
-    let bookedDates = Array.isArray(data) ? data : (data.bookedDates || []);
-    
-    if(bookedDates.includes(checkinStr)) {
+    // เช็กห้องว่างจาก data.bookedDates
+    if(data.bookedDates && data.bookedDates.includes(checkinStr)) {
        alert("ขออภัยค่ะ ห้องพักสำหรับคืนนี้เต็มแล้ว");
        btn.disabled = false;
        btn.innerText = "Fast Check-in (เข้าพักวันนี้)";
        return; 
     }
     
-    // 3. ดึงราคาจาก Sheets (ถ้าไม่มีใช้ 1500)
+    // ดึงราคาจาก Sheets (data.price) ถ้าไม่มีให้ใช้ 1500
     const currentPrice = data.price ? data.price : "1500";
 
     const bookingData = {
@@ -95,77 +92,19 @@ async function fastCheckIn() {
     };
 
     localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
+    
+    // เด้งไปหน้าจ่ายเงิน
     window.location.href = "payment.html";
 
   } catch (error) {
-    console.error(error);
-    alert("การเชื่อมต่อมีปัญหา กรุณาลองใหม่อีกครั้ง หรือเช็กอินที่หน้าเคาน์เตอร์ค่ะ");
-    btn.disabled = false;
-    btn.innerText = "Fast Check-in (เข้าพักวันนี้)";
-  }
-}
-// ฟังก์ชันบังคับเอาวันที่เครื่องแบบชัวร์ๆ ป้องกันเบราว์เซอร์รวนเรื่อง Timezone
-function getLocalYYYYMMDD(date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-}
-
-async function fastCheckIn() {
-  const btn = document.getElementById('btnFastCheckin');
-  btn.disabled = true;
-  btn.innerText = "กำลังตรวจสอบห้องว่าง...";
-
-  // 1. เซ็ตวันที่: เช็คอิน=วันนี้, เช็คเอาท์=พรุ่งนี้ แบบบังคับเวลาท้องถิ่น
-  const today = new Date();
-  const tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);
-
-  const checkinStr = getLocalYYYYMMDD(today); 
-  const checkoutStr = getLocalYYYYMMDD(tomorrow);
-  const nights = 1;
-  const price = 1500;
-
-  // 2. URL ของ Google Apps Script ที่คุณ Deploy ไว้
-  const googleAppsScriptURL = "https://script.google.com/macros/s/AKfycbxH7We7B-LdO6zwQ30LPgOxHIRmv0907-At52vBUtutkaNUBZHNs0XlW7oZMGSnkVCq/exec"; 
-  
-  try {
-    // 3. ดึงข้อมูลวันที่ถูกจองแล้วจาก Google Sheets
-    const response = await fetch(googleAppsScriptURL);
-    const bookedDates = await response.json(); 
-    
-    // 4. ตรวจสอบว่า "วันนี้" อยู่ในรายชื่อวันที่ถูกจองไปแล้วหรือยัง
-    if(bookedDates.includes(checkinStr)) {
-       alert("ขออภัยค่ะ ห้องพักสำหรับคืนนี้เต็มแล้ว");
-       btn.disabled = false;
-       btn.innerText = "Fast Check-in (เข้าพักวันนี้)";
-       return; 
-    }
-    
-    // 5. ถ้าห้องว่าง ให้จัดเตรียมข้อมูลส่งเข้า LocalStorage ทับของเก่าไปเลย
-    const bookingData = {
-      checkin: checkinStr,
-      checkout: checkoutStr,
-      nights: nights,
-      totalPrice: price,
-      type: "Fast Check-in",
-      timestamp: new Date().toISOString()
-    };
-
-    localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
-    
-    // 6. เด้งไปหน้า Payment เพื่อชำระเงิน
-    window.location.href = "payment.html";
-
-  } catch (error) {
-    alert("เกิดข้อผิดพลาดในการเชื่อมต่อระบบจอง กรุณาลองใหม่อีกครั้งค่ะ");
-    console.error("Fetch Error:", error);
+    console.error("Error:", error);
+    alert("การเชื่อมต่อมีปัญหา กรุณาลองใหม่อีกครั้งค่ะ");
     btn.disabled = false;
     btn.innerText = "Fast Check-in (เข้าพักวันนี้)";
   }
 }
 </script>
+
 
 </body>
 </html>
