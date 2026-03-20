@@ -5,24 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ชำระเงิน - Aon Thonglor 7</title>
 <style>
-/* ธีม OLED Black ประหยัดไฟ 100% สำหรับ iPhone 13 Pro Max */
+/* ธีม OLED Black ประหยัดไฟ 100% สำหรับ iPhone 13 Pro Max ของบอสอ้น */
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;background:#000;color:#fff;text-align:center;}
 .container{padding:40px 20px;}
 .payment-box{width:92%;max-width:520px;margin:0 auto;background:#111;padding:25px;border-radius:18px;border:1px solid #222;}
 
-/* ตัวนับเวลาถอยหลัง */
+/* ตัวนับเวลาถอยหลังสีแดงดุดัน */
 .timer-banner{background:#200;color:#ff4d4f;padding:12px;border-radius:12px;font-weight:bold;font-size:18px;margin-bottom:20px;border:1px solid #400;}
 
 .booking-summary{text-align:left;background:#1a1a1a;padding:15px;border-radius:12px;margin-bottom:20px;font-size:15px;line-height:1.6;border:1px solid #222;}
 .booking-summary b{color:#888;font-size:13px;}
 
-/* QR Code */
+/* QR Code (ขอบขาวเพื่อให้สแกนง่าย แต่พื้นหลังหน้าจอยังดำสนิท) */
 .qr-container{background:#fff;padding:15px;border-radius:15px;display:inline-block;margin:10px 0;}
-.qr-container img{width:200px;height:200px;display:block;}
+.qr-container img{width:220px;height:220px;display:block;}
 
 .total-price{font-size:32px;font-weight:bold;margin:20px 0;color:#fff;}
 
-/* ปุ่มสีขาวล่อนิ้วโป้งขวา */
+/* ปุ่มสีขาวล่อนิ้วโป้งขวา (ถนัดมือบอส) */
 button{width:100%;padding:18px;margin-top:10px;border:none;border-radius:14px;background:#fff;color:#000;font-size:18px;font-weight:bold;cursor:pointer;}
 button:active{transform:scale(0.98);}
 
@@ -44,34 +44,34 @@ button:active{transform:scale(0.98);}
         </div>
 
         <div class="qr-container">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PROMPTPAY_DATA" alt="QR Code">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=PROMPTPAY_DATA_HERE" alt="QR Code">
         </div>
-        <p style="font-size:13px; color:#666; margin-top:10px;">สแกน QR Code เพื่อโอนเงิน</p>
+        <p style="font-size:13px; color:#666; margin-top:10px;">กรุณาสแกน QR Code เพื่อโอนเงิน</p>
 
         <div class="total-price" id="displayPrice">฿ 0</div>
 
-        <button onclick="checkPayment()">I've Paid / ฉันชำระเงินแล้ว</button>
-        <a href="index.html" class="cancel-link" onclick="localStorage.removeItem('pendingBooking')">Cancel / ยกเลิก</a>
+        <button onclick="confirmPayment()">I've Paid / ฉันชำระเงินแล้ว</button>
+        <a href="index.html" class="cancel-link" onclick="localStorage.removeItem('pendingBooking')">Cancel / ยกเลิกการจอง</a>
     </div>
 </div>
 
 <script>
-// 1. ดึงข้อมูลที่บันทึกไว้จากหน้าก่อนหน้า
+// 1. ดึงข้อมูลที่บันทึกไว้มาจากหน้าจอง
 const bookingData = JSON.parse(localStorage.getItem("pendingBooking"));
 
 if (!bookingData) {
-    alert("ไม่พบข้อมูลการจอง / No booking data found");
+    alert("ไม่พบข้อมูลการจอง กรุณาเริ่มใหม่ค่ะบอส");
     window.location.href = "index.html";
 } else {
     document.getElementById("summaryArea").innerHTML = `
         <b>NAME:</b> ${bookingData.name}<br>
         <b>CHECK-IN:</b> ${bookingData.checkin}<br>
-        <b>STAY:</b> ${bookingData.nights} Nights (${bookingData.type})
+        <b>STAY:</b> ${bookingData.nights} คืน (${bookingData.type})
     `;
     document.getElementById("displayPrice").innerText = `฿ ${parseInt(bookingData.totalPrice).toLocaleString()}`;
 }
 
-// 2. ระบบนับถอยหลัง 5 นาที (300 วินาที)
+// 2. ระบบนับถอยหลัง (300 วินาที)
 let timeLeft = 300;
 const timerDisplay = document.getElementById("timer");
 
@@ -83,18 +83,17 @@ const countdown = setInterval(() => {
     
     if (timeLeft <= 0) {
         clearInterval(countdown);
-        alert("หมดเวลาชำระเงิน / Time is up");
+        alert("หมดเวลาชำระเงิน / Payment timeout");
         localStorage.removeItem("pendingBooking");
         window.location.href = "index.html";
     }
     timeLeft--;
 }, 1000);
 
-// 3. ฟังก์ชันกดยืนยันการจ่าย
-function checkPayment() {
-    // บอสสามารถเชื่อม API แจ้งเตือนเข้า Line หรือ Sheets ตรงนี้ได้เลย
-    alert("ระบบกำลังตรวจสอบยอดเงิน... / Verifying payment...");
-    window.location.href = "index.html"; // หรือไปหน้า Success
+// 3. ฟังก์ชันกดยืนยันเพื่อไปหน้า Waiting (เพื่อส่งข้อมูลเข้า Sheets)
+function confirmPayment() {
+    // ส่งต่อไปหน้า Waiting เพื่อให้หน้าโน้นจัดการยิง API เข้า Google Sheets ของบอส
+    window.location.href = "waiting.html";
 }
 </script>
 
