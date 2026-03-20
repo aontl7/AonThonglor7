@@ -1,70 +1,102 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment - Aon Thonglor 7</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ชำระเงิน - Aon Thonglor 7</title>
+<style>
+/* ธีม OLED Black ประหยัดไฟ 100% สำหรับ iPhone 13 Pro Max */
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;background:#000;color:#fff;text-align:center;}
+.container{padding:40px 20px;}
+.payment-box{width:92%;max-width:520px;margin:0 auto;background:#111;padding:25px;border-radius:18px;border:1px solid #222;}
+
+/* ตัวนับเวลาถอยหลัง */
+.timer-banner{background:#200;color:#ff4d4f;padding:12px;border-radius:12px;font-weight:bold;font-size:18px;margin-bottom:20px;border:1px solid #400;}
+
+.booking-summary{text-align:left;background:#1a1a1a;padding:15px;border-radius:12px;margin-bottom:20px;font-size:15px;line-height:1.6;border:1px solid #222;}
+.booking-summary b{color:#888;font-size:13px;}
+
+/* QR Code */
+.qr-container{background:#fff;padding:15px;border-radius:15px;display:inline-block;margin:10px 0;}
+.qr-container img{width:200px;height:200px;display:block;}
+
+.total-price{font-size:32px;font-weight:bold;margin:20px 0;color:#fff;}
+
+/* ปุ่มสีขาวล่อนิ้วโป้งขวา */
+button{width:100%;padding:18px;margin-top:10px;border:none;border-radius:14px;background:#fff;color:#000;font-size:18px;font-weight:bold;cursor:pointer;}
+button:active{transform:scale(0.98);}
+
+.cancel-link{display:block;margin-top:20px;color:#555;text-decoration:none;font-size:14px;}
+</style>
 </head>
-<body style="text-align:center; font-family:sans-serif; padding:0; margin:0; background:#f5f5f5;">
+<body>
 
-    <div style="width:100%; height:200px; overflow:hidden; background:#000;">
-        <img src="building.PNG" alt="Aon Thonglor 7 Facade" style="width:100%; height:100%; object-fit:cover; opacity:0.8;">
-    </div>
-
-    <div style="max-width:400px; margin:-30px auto 40px; background:#fff; padding:30px 20px; border-radius:20px; box-shadow:0 10px 25px rgba(0,0,0,0.1); position:relative; z-index:1;">
-        
-        <h2 style="margin-top:0; color:#333;">Confirm Payment</h2>
-        <p style="color:#777; margin-bottom:30px;">Aon Thonglor 7 • Bangkok</p>
-
-        <div id="display-area">
-            <p>Checking status...</p>
+<div class="container">
+    <div class="payment-box">
+        <div class="timer-banner">
+            ชำระเงินภายใน: <span id="timer">05:00</span>
         </div>
 
-        <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
-        
-        <div style="font-size:14px; color:#666; text-align:left; line-height:1.8; background:#f9f9f9; padding:15px; border-radius:10px;">
-            🏠 **Aon Thonglor 7**<br>
-            📍 143/6 Thonglor Soi 7, Bangkok<br>
-            📞 090-798-0860
+        <h2 style="margin:0 0 15px 0; font-size:22px;">Payment / ชำระเงิน</h2>
+
+        <div class="booking-summary" id="summaryArea">
+            กำลังโหลดข้อมูลการจอง...
         </div>
 
-        <a href="index.html" style="display:block; margin-top:30px; padding:15px; background:#000; color:#fff; text-decoration:none; border-radius:10px; font-weight:bold;">Back to Home</a>
+        <div class="qr-container">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PROMPTPAY_DATA" alt="QR Code">
+        </div>
+        <p style="font-size:13px; color:#666; margin-top:10px;">สแกน QR Code เพื่อโอนเงิน</p>
+
+        <div class="total-price" id="displayPrice">฿ 0</div>
+
+        <button onclick="checkPayment()">I've Paid / ฉันชำระเงินแล้ว</button>
+        <a href="index.html" class="cancel-link" onclick="localStorage.removeItem('pendingBooking')">Cancel / ยกเลิก</a>
     </div>
+</div>
 
-    <script>
-    const dataStr = localStorage.getItem("pendingBooking");
-    const area = document.getElementById("display-area");
+<script>
+// 1. ดึงข้อมูลที่บันทึกไว้จากหน้าก่อนหน้า
+const bookingData = JSON.parse(localStorage.getItem("pendingBooking"));
 
-    if (dataStr) {
-        try {
-            const booking = JSON.parse(dataStr);
-            const d = new Date(booking.checkin);
-            const dayStr = String(d.getDate()).padStart(2, '0'); 
-            const finalPrice = "1251." + dayStr; 
-            const qrUrl = "https://promptpay.io/0907980860/" + finalPrice + ".png";
+if (!bookingData) {
+    alert("ไม่พบข้อมูลการจอง / No booking data found");
+    window.location.href = "index.html";
+} else {
+    document.getElementById("summaryArea").innerHTML = `
+        <b>NAME:</b> ${bookingData.name}<br>
+        <b>CHECK-IN:</b> ${bookingData.checkin}<br>
+        <b>STAY:</b> ${bookingData.nights} Nights (${bookingData.type})
+    `;
+    document.getElementById("displayPrice").innerText = `฿ ${parseInt(bookingData.totalPrice).toLocaleString()}`;
+}
 
-            area.innerHTML = `
-                <div style="background:#fff; padding:20px; border:2px solid #eee; border-radius:15px;">
-                    <p style="font-size:14px; color:#777; margin:0;">Total Amount</p>
-                    <h1 style="font-size:48px; margin:10px 0; color:#000;">${finalPrice} <span style="font-size:20px; color:#555;">THB</span></h1>
-                    
-                    <img src="${qrUrl}" style="width:100%; max-width:280px; border:1px solid #ddd; margin:20px 0; border-radius:10px;">
-                    
-                    <div style="text-align:left; font-size:16px; color:#333; line-height:2; background:#f9f9f9; padding:15px; border-radius:10px;">
-                        📅 Check-in: <b>${booking.checkin}</b><br>
-                        🌙 Nights: <b>${booking.nights || "1"}</b><br>
-                        👤 Type: <b>${booking.type || "Fast Check-in"}</b>
-                    </div>
+// 2. ระบบนับถอยหลัง 5 นาที (300 วินาที)
+let timeLeft = 300;
+const timerDisplay = document.getElementById("timer");
 
-                    <p style="color:red; font-weight:bold; margin-top:20px; font-size:14px;">⚠️ Please transfer exactly ${finalPrice} THB</p>
-                </div>
-            `;
-        } catch (e) {
-            area.innerHTML = "<h1>Data Error: Please go back and try again.</h1>";
-        }
-    } else {
-        area.innerHTML = "<h1>No Booking Found. Please start over.</h1>";
+const countdown = setInterval(() => {
+    let mins = Math.floor(timeLeft / 60);
+    let secs = timeLeft % 60;
+    
+    timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    
+    if (timeLeft <= 0) {
+        clearInterval(countdown);
+        alert("หมดเวลาชำระเงิน / Time is up");
+        localStorage.removeItem("pendingBooking");
+        window.location.href = "index.html";
     }
-    </script>
+    timeLeft--;
+}, 1000);
+
+// 3. ฟังก์ชันกดยืนยันการจ่าย
+function checkPayment() {
+    // บอสสามารถเชื่อม API แจ้งเตือนเข้า Line หรือ Sheets ตรงนี้ได้เลย
+    alert("ระบบกำลังตรวจสอบยอดเงิน... / Verifying payment...");
+    window.location.href = "index.html"; // หรือไปหน้า Success
+}
+</script>
+
 </body>
 </html>
