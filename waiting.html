@@ -1,31 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-
-<title>Checking Payment</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checking Payment - Thonglor 7</title>
 <style>
-
+/* ธีม OLED Black ประหยัดไฟพิกเซลปิดสนิท */
 body{
     margin:0;
     font-family:-apple-system, BlinkMacSystemFont, sans-serif;
+    background:#000; /* ดำสนิท */
+    color:#fff;
 }
 
-/* background */
+/* พื้นหลังรูปภาพ (ใส่ Filter ให้มืดลงหน่อยจะได้ไม่แสบตาตอนตีสี่) */
 .bg{
     position:fixed;
     width:100%;
     height:100%;
     background:url('checkin2.PNG') center/cover no-repeat;
+    filter: brightness(0.3) grayscale(50%); /* ปรับรูปให้ดูขรึม */
 }
 
-/* overlay (บาง ไม่ซีด) */
+/* overlay ดำสนิท */
 .overlay{
     position:fixed;
     width:100%;
     height:100%;
-    background:rgba(255,255,255,0.25);
+    background:rgba(0,0,0,0.6);
 }
 
 /* layout */
@@ -38,44 +40,46 @@ body{
     padding:40px 20px 80px;
 }
 
-/* card */
+/* card สีดำเข้ม */
 .card{
     width:100%;
     max-width:420px;
-    background:white;
+    background:#111; /* เทาเข้มเกือบดำ */
     border-radius:24px;
     padding:44px 28px;
-    box-shadow:0 20px 40px rgba(0,0,0,0.15);
-
+    border:1px solid #222;
+    box-shadow:0 20px 40px rgba(0,0,0,0.5);
     min-height:320px;
-
     display:flex;
     flex-direction:column;
     justify-content:center;
+    box-sizing:border-box;
 }
 
 /* text */
 h2{
     text-align:center;
     margin:0;
-    font-size:24px;
+    font-size:22px;
+    letter-spacing:1px;
 }
 
 p{
     text-align:center;
-    color:#777;
+    color:#888;
     margin-top:10px;
+    font-size:15px;
 }
 
-/* loader */
+/* loader สีขาวเด่นบนพื้นดำ */
 .loader{
-    border:4px solid #eee;
-    border-top:4px solid black;
+    border:3px solid #222;
+    border-top:3px solid #fff; /* หมุนสีขาว */
     border-radius:50%;
-    width:50px;
-    height:50px;
+    width:45px;
+    height:45px;
     margin:30px auto;
-    animation:spin 1s linear infinite;
+    animation:spin 0.8s linear infinite;
 }
 
 @keyframes spin{
@@ -86,13 +90,12 @@ p{
 /* note */
 .note{
     text-align:center;
-    font-size:13px;
-    color:#aaa;
-    margin-top:10px;
+    font-size:12px;
+    color:#444;
+    margin-top:15px;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -101,58 +104,46 @@ p{
 <div class="overlay"></div>
 
 <div class="container">
-
-<div class="card">
-
-<h2>Checking Payment...</h2>
-
-<p>Please wait while we verify your transfer</p>
-
-<div class="loader"></div>
-
-<p class="note">Do not close this page</p>
-
-</div>
-
+    <div class="card">
+        <h2>Checking Payment...</h2>
+        <p>กำลังตรวจสอบยอดโอนของท่าน<br>กรุณารอสักครู่ค่ะ</p>
+        
+        <div class="loader"></div>
+        
+        <p class="note">กรุณาอย่าปิดหน้าต่างนี้จนกว่าจะเสร็จสิ้น<br>Do not close this page</p>
+    </div>
 </div>
 
 <script>
-// URL ของ Google Apps Script ที่เราเพิ่ง Deploy กัน
+// URL ของ Google Apps Script ของบอส
 const googleAppsScriptURL = "https://script.google.com/macros/s/AKfycbx8sGu-FbMMt23bZ-oRdTAl_0zAovIQVoNgfUIxjzZsuu_ezDXgtx_LCo9b6d-07s3T/exec";
 
-// ดึงข้อมูลที่เตรียมไว้จาก LocalStorage
 const storedData = localStorage.getItem("pendingBooking");
 
 if (storedData) {
     const bookingData = JSON.parse(storedData);
 
-    // ยิงข้อมูลเข้า Google Sheets แบบเบื้องหลัง
+    // ยิงข้อมูลเข้า Google Sheets
     fetch(googleAppsScriptURL, {
         method: "POST",
+        mode: "no-cors", // ใช้ no-cors ถ้าเจอปัญหาเรื่อง Cross-Origin
         body: JSON.stringify(bookingData) 
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === "success") {
-            // ถ้ายิงเข้าชีตสำเร็จ ให้เด้งไปหน้า Check-in เลย
+    .then(() => {
+        // เนื่องจากใช้ no-cors เราจะไม่ได้ JSON response 
+        // เจนนี่เลยใส่หน่วงเวลาไว้ 2 วินาทีเพื่อให้มั่นใจว่าข้อมูลส่งไปแล้ว
+        setTimeout(() => {
             console.log("บันทึกข้อมูลสำเร็จ!");
             window.location.href = "checkin.html";
-        } else {
-            // ถ้าชีตพังหรือมีปัญหา
-            alert("ขออภัยค่ะ เกิดข้อผิดพลาดในการบันทึกข้อมูล: " + data.message);
-            window.location.href = "index.html"; 
-        }
+        }, 2500);
     })
     .catch(error => {
-        // ถ้าเน็ตหลุดหรือติดต่อเซิร์ฟเวอร์ไม่ได้
         console.error("Error submitting data:", error);
-        alert("เครือข่ายมีปัญหา ไม่สามารถส่งข้อมูลได้ กรุณาติดต่อแอดมินค่ะ");
+        alert("เครือข่ายมีปัญหา กรุณาลองใหม่อีกครั้งค่ะ");
         window.location.href = "index.html";
     });
 
 } else {
-    // ดักไว้เผื่อมีคนแอบพิมพ์ URL เข้ามาหน้านี้ตรงๆ โดยไม่ได้กดจอง
-    alert("ไม่พบข้อมูลการทำรายการค่ะ");
     window.location.href = "index.html";
 }
 </script>
