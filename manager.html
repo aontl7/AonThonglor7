@@ -1,77 +1,186 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Panel - Aon Thonglor 7</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body { margin:0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; background:#f5f5f5; text-align:center; }
-        .header-img { width:100%; height:220px; object-fit:cover; background:#000; }
-        .box { background:white; margin:-20px auto 40px; padding:25px; border-radius:20px; max-width:420px; box-shadow:0 10px 30px rgba(0,0,0,0.1); }
-        h2 { margin-top:0; font-size:22px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .section { margin-bottom: 20px; text-align: left; background: #fafafa; padding: 15px; border-radius: 12px; border: 1px solid #eee; }
-        .section-title { font-size: 14px; color: #555; font-weight: bold; margin-bottom: 10px; }
-        
-        /* Input & Select */
-        .price-group { display: flex; align-items: center; background: white; border: 1px solid #ccc; border-radius: 10px; overflow: hidden; }
-        .price-group input { width: 60%; border: none; padding: 12px; font-size: 18px; text-align: right; outline: none; }
-        .price-group .fixed-unit { width: 40%; background: #eee; padding: 12px; font-size: 18px; color: #666; border-left: 1px solid #ccc; font-weight: bold; }
-        select { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 10px; background: white; margin-bottom: 10px; }
-        
-        /* Buttons */
-        .btn { width:100%; padding:14px; font-size:16px; font-weight: bold; border:none; border-radius:10px; cursor: pointer; margin-top: 5px; transition: 0.2s; }
-        .primary { background:black; color:white; }
-        .danger { background: #d32f2f; color: white; }
-        .line-btn { background: #06C755; color: white; margin-bottom: 10px; text-decoration: none; display: block; text-align: center; line-height: 1.4; }
-        
-        /* Door Button Special */
-        .door-btn { height: 80px; font-size: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); box-shadow: 0 4px 15px rgba(211,47,47,0.4); background: linear-gradient(to bottom, #ff4d4d, #d32f2f); }
-        .door-btn:active { transform: scale(0.98); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-    </style>
+<title>Manager Panel - Aon Thonglor 7</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+    margin:0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background:#f5f5f5;
+    text-align:center;
+}
+
+/* รูปหัว */
+.header-img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+/* กล่อง */
+.box{
+    background:white;
+    margin:-20px auto 20px;
+    padding:25px 25px 30px;
+    border-radius:20px;
+    max-width:420px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+
+h2{
+    margin-top:0;
+    font-size:22px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* Section */
+.section {
+    margin-bottom: 25px;
+    text-align: left;
+    background: #fafafa;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+}
+
+.section-title {
+    font-size: 14px;
+    color: #555;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Price Input Group */
+.price-group {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.price-group input {
+    width: 60%;
+    border: none;
+    padding: 12px;
+    font-size: 18px;
+    text-align: right;
+    outline: none;
+}
+
+.price-group .fixed-unit {
+    width: 40%;
+    background: #eee;
+    padding: 12px;
+    font-size: 18px;
+    color: #666;
+    text-align: left;
+    border-left: 1px solid #ccc;
+    font-weight: bold;
+}
+
+/* Select Dropdown */
+select {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background: white;
+    margin-bottom: 10px;
+}
+
+/* ปุ่ม */
+.btn{
+    width:100%;
+    padding:14px;
+    font-size:16px;
+    font-weight: bold;
+    border:none;
+    border-radius:10px;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.primary{
+    background:black;
+    color:white;
+}
+
+.danger{
+    background: #d32f2f;
+    color: white;
+}
+
+/* ปุ่มเปิดประตูแบบบอส */
+.door-btn {
+    background: linear-gradient(135deg, #d32f2f 0%, #8b0000 100%);
+    color: white;
+    height: 70px;
+    font-size: 20px;
+    box-shadow: 0 4px 15px rgba(211,47,47,0.4);
+}
+
+.line-btn{
+    background: #06C755;
+    color: white;
+    margin-bottom: 10px;
+}
+</style>
+
 </head>
+
 <body>
 
-<img src="building.PNG" class="header-img" alt="Aon Thonglor 7">
+<img src="building.PNG" class="header-img">
 
 <div class="box">
-    <h2>Admin Control Panel</h2>
+    <h2>Manager Control Panel</h2>
+
+    <div class="section" style="background: #fff0f0; border-color: #ffcccc;">
+        <div class="section-title" style="color: #d32f2f;">🔓 ระบบคุมประตู (Front Door)</div>
+        <button id="doorBtn" class="btn door-btn" onclick="openDoor()">PUSH TO OPEN</button>
+        <div id="doorStatus" style="font-size: 12px; color: #888; margin-top: 8px; text-align: center;">สถานะ: พร้อมสั่งการ</div>
+    </div>
 
     <div class="section">
         <div class="section-title">1. ตั้งค่าราคาห้องพัก (บาท)</div>
         <div class="price-group">
-            <input type="number" id="basePrice" placeholder="เช่น 1200" step="1">
-            <div class="fixed-unit">.XX</div>
+            <input type="number" id="basePrice" placeholder="เช่น 150" step="1">
+            <div class="fixed-unit">X.XX</div>
         </div>
-        <button class="btn primary" onclick="updatePrice()">💾 บันทึกราคาลง Sheets</button>
-    </div>
-
-    <div class="section" style="background: #fff0f0; border: 2px solid #ffcccc;">
-        <div class="section-title" style="color: #d32f2f;">2. ระบบควบคุมประตู (Door Access)</div>
-        <button id="doorBtn" class="btn danger door-btn" onclick="openDoor()">🔓 กดเปิดประตูหน้าบ้าน</button>
-        <div id="doorStatus" style="font-size: 12px; color: #888; margin-top: 10px; text-align: center;">สถานะ: พร้อมสั่งการ</div>
+        <button class="btn primary" onclick="updatePrice()" style="margin-top: 15px;">💾 บันทึกราคาใหม่</button>
     </div>
 
     <div class="section">
-        <div class="section-title">3. จัดการคิวจองห้องพัก</div>
+        <div class="section-title">2. จัดการคิวจองห้อง</div>
         <select id="bookingList">
             <option value="">กำลังโหลดคิวจอง...</option>
-        </select>
-        <button class="btn danger" onclick="cancelBooking()">❌ ยกเลิกการจองนี้</button>
+            </select>
+        <button class="btn danger" onclick="cancelBooking()">❌ ยกเลิกการจอง</button>
     </div>
 
     <div class="section">
-        <div class="section-title">4. แจ้งเตือนทีมงาน (LINE)</div>
-        <a href="https://line.me/R/msg/text/?แจ้งงานแม่บ้าน: รบกวนทำความสะอาดห้องพักด้วยค่ะ" class="btn line-btn">🧹 เรียกแม่บ้าน</a>
-        <a href="https://line.me/R/msg/text/?แจ้งงานผ้า: ส่งซักผ้าเช็ดตัวและเครื่องนอนค่ะ" class="btn line-btn">🧺 ส่งซักผ้า</a>
+        <div class="section-title">3. แจ้งเตือนทีมงาน</div>
+        <a href="https://line.me/R/msg/text/?แม่บ้าน" style="text-decoration:none;">
+            <button class="btn line-btn">🧹 เรียกแม่บ้าน</button>
+        </a>
+        <a href="https://line.me/R/msg/text/?ซักผ้า" style="text-decoration:none;">
+            <button class="btn line-btn">🧺 ส่งซักผ้า</button>
+        </a>
     </div>
+
 </div>
 
 <script>
-// --- ลิงก์ Apps Script ของบอส ---
-const DOOR_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzJhox9gLYjK2KqQMk78bHUVsK6gU8CAOJiTtQeadNhCfCIkHUJDoGw_RS7P70m-VCh/exec";
-const ADMIN_SHEET_URL = "https://script.google.com/macros/s/AKfycbxH7We7B-LdO6zwQ30LPgOxHIRmv0907-At52vBUtutkaNUBZHNs0XlW7oZMGSnkVCq/exec";
+// ลิงก์ Apps Script กุญแจดิจิทัลของบอสอ้น
+const doorScriptURL = "https://script.google.com/macros/s/AKfycbzYF8QAf70ZRK0FmLLDG_4BKKT9b9Q1zr61LwP1Tq0I7BSlahx-0EGhznM0ost5Adkz/exec";
 
-// 🔓 ฟังก์ชันเปิดประตู
+// ฟังก์ชันเปิดประตู
 async function openDoor() {
     const btn = document.getElementById("doorBtn");
     const status = document.getElementById("doorStatus");
@@ -79,47 +188,41 @@ async function openDoor() {
     if(!confirm("ยืนยันเปิดประตูหน้าบ้านใช่ไหมคะบอส?")) return;
 
     btn.disabled = true;
-    btn.style.opacity = "0.6";
-    status.innerText = "⏳ กำลังส่งสัญญาณไปที่ Sonoff...";
+    status.innerText = "⏳ กำลังส่งสัญญาณ...";
 
     try {
-        await fetch(DOOR_SCRIPT_URL, { mode: 'no-cors' });
-        status.innerText = "✅ สำเร็จ! ประตูเปิดแล้ว (Inching 0.5s)";
+        await fetch(doorScriptURL, { mode: 'no-cors' });
+        status.innerText = "✅ สำเร็จ! ประตูเปิดแล้ว";
         status.style.color = "#2e7d32";
         
         setTimeout(() => {
             status.innerText = "สถานะ: พร้อมสั่งการ";
             status.style.color = "#888";
             btn.disabled = false;
-            btn.style.opacity = "1";
         }, 5000);
     } catch (e) {
         alert("ผิดพลาด: " + e);
         btn.disabled = false;
-        btn.style.opacity = "1";
     }
 }
 
-// 💾 ฟังก์ชันอัปเดตราคา
 function updatePrice() {
     const price = document.getElementById("basePrice").value;
-    if(!price || price < 1) { alert("ใส่ราคาด้วยค่ะบอส!"); return; }
-    
-    statusNotify("กำลังบันทึกราคา " + price + "...");
-    // ส่วนนี้เดี๋ยวรอเชื่อมกับ Apps Script ฝั่ง Sheets ค่ะ
-    alert("ระบบกำลังส่งราคา " + price + " ไปยัง Google Sheets ค่ะ");
+    if(!price || price < 1) {
+        alert("กรุณาใส่ตัวเลขราคาที่ถูกต้องค่ะ");
+        return;
+    }
+    const finalPrice = price + "X.XX";
+    alert("กำลังเตรียมส่งข้อมูลราคา: " + finalPrice + " ไปที่ Sheets");
 }
 
 function cancelBooking() {
     const selected = document.getElementById("bookingList").value;
-    if(!selected) { alert("เลือกคิวก่อนค่ะ!"); return; }
-    if(confirm("ยกเลิกคิวนี้ชัวร์นะบอส?")) {
-        alert("กำลังลบคิวออกจากระบบ...");
+    if(!selected) {
+        alert("กรุณาเลือกคิวที่ต้องการยกเลิกค่ะ");
+        return;
     }
-}
-
-function statusNotify(msg) {
-    console.log(msg);
+    alert("กำลังเตรียมส่งคำสั่งยกเลิกคิวนี้");
 }
 </script>
 
