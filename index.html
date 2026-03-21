@@ -9,6 +9,7 @@
 <style>
 /* OLED Black ประหยัดไฟ iPhone 13 Pro Max ของบอสอ้น */
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#000;text-align:center;color:#fff;}
+/* รูปสว่างสดใสตามต้นฉบับ ห้ามใส่ filter มืดเด็ดขาด */
 .hero img{width:100%;display:block;height:300px;object-fit:cover;}
 .container{padding:30px 20px 40px;background:#111;border-radius:30px 30px 0 0;margin-top:-30px;position:relative;border:1px solid #222;}
 h1{font-size:36px;margin:10px 0;}
@@ -16,12 +17,13 @@ h1{font-size:36px;margin:10px 0;}
 .price{font-size:28px;margin-top:18px;background:#222;padding:15px;border-radius:15px;border:1px dashed #444;display:inline-block;width:80%;}
 .checkin{color:#888;margin:15px 0 10px 0;}
 .facilities{color:#666;font-size:16px;margin-bottom:30px;line-height:1.6;}
-/* ปุ่มขาวเด่นล่อนิ้วโป้งขวาบอส */
 .button{display:block;background:#fff;color:#000;text-decoration:none;padding:18px;margin:12px auto;max-width:320px;border-radius:14px;font-size:18px;cursor:pointer;border:none;width:100%;box-sizing:border-box;font-weight:bold;}
 .button.secondary{background:#000;color:#444;border:1px solid #222;}
 .button:disabled {background:#444;color:#888;cursor:not-allowed;}
-/* ส่วนแสดงแผนที่ */
+/* ส่วนแสดงแผนที่ทองหล่อ 7 ที่บอสห้ามลบ */
 .map{margin-top:40px;border-radius:20px;overflow:hidden;border:1px solid #333;}
+/* ส่วนเลขห้อง.วันที่ (X.xx) ห้ามลบ ห้ามแก้ */
+.version-tag{position:fixed;bottom:10px;right:15px;font-size:10px;color:#333;font-family:monospace;letter-spacing:1px;}
 </style>
 </head>
 <body>
@@ -60,11 +62,28 @@ h1{font-size:36px;margin:10px 0;}
     </div>
 </div>
 
+<div class="version-tag">V 1.02 X.xx</div>
+
 <script>
-// ตรวจสอบว่ามี API_URL หรือยัง
-if (typeof API_URL === 'undefined') {
-    console.error("หาไฟล์ config.js ไม่เจอ หรือไม่ได้ตั้งค่า API_URL ค่ะบอส!");
+// 1. ซิงค์ราคาจาก Sheets (B1)
+async function syncPrice() {
+    try {
+        const response = await fetch(`${API_URL}?action=getPrice`);
+        const data = await response.json();
+        
+        // ดึงค่า price มาแสดง (เช่น 1200.21)
+        if(data && data.price) {
+            document.getElementById("displayPrice").innerText = data.price; 
+            localStorage.setItem("latest_price", data.price);
+        }
+    } catch (error) {
+        // Fallback กรณีเน็ตเน่า
+        const savedPrice = localStorage.getItem("latest_price") || "1,500.00";
+        document.getElementById("displayPrice").innerText = savedPrice;
+    }
 }
+
+syncPrice();
 
 function getLocalYYYYMMDD(date) {
     const y = date.getFullYear();
@@ -72,25 +91,6 @@ function getLocalYYYYMMDD(date) {
     const d = String(date.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
 }
-
-// 2. ซิงค์ราคาล่าสุดจาก Sheets (ช่อง B1)
-async function syncPrice() {
-    try {
-        const response = await fetch(`${API_URL}?action=getPrice`);
-        const data = await response.json();
-        if(data.price) {
-            document.getElementById("displayPrice").innerText = data.price.toLocaleString();
-            localStorage.setItem("latest_price", data.price);
-        }
-    } catch (error) {
-        // ใช้ราคาล่าสุดที่เคยดึงมาได้ ถ้าเน็ตมีปัญหา
-        const savedPrice = localStorage.getItem("latest_price") || "1,500";
-        document.getElementById("displayPrice").innerText = savedPrice;
-    }
-}
-
-// รันซิงค์ราคาทันที
-syncPrice();
 
 async function confirmFastCheckIn() {
   const result = await Swal.fire({
@@ -118,7 +118,6 @@ async function fastCheckIn() {
   btn.innerText = "Checking...";
 
   try {
-    // 3. เรียก API_URL เพื่อเช็กสถานะล่าสุด
     const response = await fetch(`${API_URL}?action=getPrice`);
     const data = await response.json(); 
     
@@ -127,15 +126,14 @@ async function fastCheckIn() {
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
 
-    // ดักสถานะห้องว่าง (ถ้าบอสมีระบบ bookedDates ใน Sheets)
+    // เช็กสถานะห้องว่าง
     if(data.bookedDates && data.bookedDates.includes(checkinStr)) {
-       Swal.fire({ title: 'Full!', text: 'วันนี้ห้องเต็มแล้วค่ะบอส', icon: 'error', background:'#111', color:'#fff' });
+       Swal.fire({ title: 'Full!', text: 'วันนี้ห้องเต็มแล้วค่ะ', icon: 'error', background:'#111', color:'#fff' });
        btn.disabled = false;
        btn.innerText = "Fast Check-in (เข้าพักวันนี้)";
        return; 
     }
     
-    // ใช้ราคาจาก Sheets บันทึกลงเครื่องเพื่อไปหน้าจ่ายเงิน
     const currentPrice = data.price || localStorage.getItem("latest_price") || "1500";
     const bookingData = {
       name: "Fast Guest",
