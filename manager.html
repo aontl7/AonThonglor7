@@ -7,100 +7,107 @@
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
-/* OLED Black ประหยัดไฟ iPhone 13 Pro Max ของบอสอ้น */
+/* OLED Black Professional Style - iPhone 13 Pro Max */
 body{margin:0;font-family:-apple-system,sans-serif;background:#000;color:#fff;text-align:center;padding-bottom:80px;}
-.header-img{width:100%;height:220px;object-fit:cover;filter:brightness(0.4);}
-.box{background:#111;margin:-25px auto 30px;padding:25px;border-radius:24px;max-width:420px;border:1px solid #222;box-shadow:0 10px 40px rgba(0,0,0,0.8);position:relative;}
-h2{margin-top:0;font-size:20px;border-bottom:1px solid #333;padding-bottom:15px;letter-spacing:1px;}
+.header-img{width:100%;height:220px;object-fit:cover;filter:brightness(0.3);}
+.box{background:#111;margin:-25px auto 30px;padding:25px;border-radius:24px;max-width:420px;border:1px solid #222;position:relative;}
+h2{margin-top:0;font-size:18px;border-bottom:1px solid #333;padding-bottom:15px;color:#888;}
 .section{margin-bottom:20px;text-align:left;background:#1a1a1a;padding:15px;border-radius:14px;border:1px solid #222;}
-.section-title{font-size:13px;color:#888;font-weight:bold;margin-bottom:12px;text-transform:uppercase;}
+.section-title{font-size:12px;color:#666;font-weight:bold;margin-bottom:12px;text-transform:uppercase;}
 .price-group{display:flex;align-items:center;background:#222;border:1px solid #333;border-radius:12px;overflow:hidden;}
-.price-group input{width:60%;border:none;padding:14px;font-size:20px;text-align:right;outline:none;background:transparent;color:#fff;}
-.price-group .fixed-unit{width:40%;background:#333;padding:14px;font-size:18px;color:#aaa;text-align:left;border-left:1px solid #444;font-weight:bold;}
-.btn{width:100%;padding:16px;font-size:16px;font-weight:bold;border:none;border-radius:12px;cursor:pointer;margin-top:5px;transition:0.2s;}
-.btn:active{transform:scale(0.98);}
+.price-group input{width:60%;border:none;padding:14px;font-size:20px;text-align:right;background:transparent;color:#fff;outline:none;}
+.price-group .fixed-unit{width:40%;background:#333;padding:14px;font-size:16px;color:#888;text-align:left;border-left:1px solid #444;}
+.btn{width:100%;padding:16px;font-size:16px;font-weight:bold;border:none;border-radius:12px;cursor:pointer;margin-top:5px;}
 .primary{background:#fff;color:#000;}
-.door-btn{background:linear-gradient(135deg, #800 0%, #400 100%);color:white;height:80px;font-size:22px;border:1px solid #a00;box-shadow:0 4px 20px rgba(139,0,0,0.5);}
-.line-btn{background:#064321;color:#06C755;border:1px solid #085a2c;margin-bottom:10px;text-decoration:none;display:block;text-align:center;line-height:45px;}
+.door-btn{background:#400;color:#fff;height:70px;font-size:20px;border:1px solid #600;}
+.line-btn{background:#111;color:#06C755;border:1px solid #222;margin-bottom:10px;text-decoration:none;display:block;text-align:center;line-height:45px;}
 
-/* ส่วนแสดงข้อมูลเลขห้องและวันที่จองที่บอสห้ามลบ */
-.info-tag{position:fixed;bottom:10px;right:15px;font-size:14px;color:#555;font-family:monospace;letter-spacing:1px;text-align:right;}
+/* ส่วนแสดงราคาหลักบาททศนิยม 2 ตำแหน่งที่บอสสั่ง */
+.price-display-tag{position:fixed;bottom:10px;right:15px;font-size:14px;color:#444;font-family:monospace;letter-spacing:1px;text-align:right;}
 </style>
 </head>
 
 <body>
-
 <img src="building.PNG" class="header-img">
 <div class="box">
-    <h2>MANAGER CONTROL PANEL</h2>
+    <h2>SYSTEM CONTROL PANEL</h2>
 
-    <div class="section" style="background:#200; border-color:#400;">
-        <div class="section-title" style="color:#ff4d4f;">🔓 FRONT DOOR CONTROL</div>
-        <button id="doorBtn" class="btn door-btn" onclick="openDoor()">PUSH TO OPEN</button>
-        <div id="doorStatus" style="font-size:12px; color:#666; margin-top:10px; text-align:center;">STATUS: READY</div>
+    <div class="section">
+        <div class="section-title">🔓 DOOR CONTROL</div>
+        <button id="doorBtn" class="btn door-btn" onclick="openDoor()">OPEN FRONT DOOR</button>
+        <div id="doorStatus" style="font-size:12px; color:#444; margin-top:10px; text-align:center;">STATUS: READY</div>
     </div>
 
     <div class="section">
-        <div class="section-title">1. SET ROOM PRICE (บาท)</div>
+        <div class="section-title">💰 ROOM PRICE (DAILY)</div>
         <div class="price-group">
-            <input type="number" id="basePrice" placeholder="เช่น 1500" step="1">
+            <input type="number" id="basePrice" placeholder="ระบุราคา" step="0.01">
             <div class="fixed-unit">THB</div>
         </div>
-        <button class="btn primary" onclick="updatePrice()" style="margin-top:15px;">💾 SAVE TO SHEETS</button>
+        <button class="btn primary" onclick="updatePrice()" style="margin-top:10px;">UPDATE PRICE</button>
     </div>
 
     <div class="section">
-        <div class="section-title">2. STAFF NOTIFICATION</div>
-        <a href="https://line.me/R/msg/text/?เรียกแม่บ้านครับ" class="line-btn" style="text-decoration:none;">🧹 CALL MAID (เรียกแม่บ้าน)</a>
-        <a href="https://line.me/R/msg/text/?ส่งซักผ้าครับ" class="line-btn" style="text-decoration:none;">🧺 LAUNDRY (ส่งซักผ้า)</a>
+        <div class="section-title">📞 STAFF SERVICE</div>
+        <a href="https://line.me/R/msg/text/?เรียกแม่บ้านครับ" class="btn line-btn">CALL MAID</a>
+        <a href="https://line.me/R/msg/text/?ส่งซักผ้าครับ" class="btn line-btn">LAUNDRY SERVICE</a>
     </div>
 </div>
 
-<div class="info-tag">X.xx</div>
+<div class="price-display-tag" id="priceTag">0.00</div>
 
 <script>
-async function openDoor() {
-    const btn = document.getElementById("doorBtn");
-    const status = document.getElementById("doorStatus");
-    if(!confirm("ยืนยันเปิดประตูหน้าบ้านใช่ไหมคะบอส?")) return;
-    btn.disabled = true;
-    status.innerText = "⏳ SENDING SIGNAL...";
-    try {
-        await fetch(`${API_URL}?action=openDoor`, { mode: 'no-cors' });
-        status.innerText = "✅ SUCCESS! DOOR OPENED";
-        setTimeout(() => {
-            status.innerText = "STATUS: READY";
-            btn.disabled = false;
-        }, 5000);
-    } catch (e) {
-        status.innerText = "ERROR!";
-        btn.disabled = false;
-    }
-}
-
 async function updatePrice() {
-    const price = document.getElementById("basePrice").value;
-    if(!price || price < 1) {
-        Swal.fire({ title: 'ราคาไม่ถูกต้อง!', icon: 'error', background:'#111', color:'#fff' });
-        return;
-    }
+    let price = document.getElementById("basePrice").value;
+    if(!price || price < 0) return;
+
+    // แปลงเป็นทศนิยม 2 ตำแหน่งก่อนส่ง
+    price = parseFloat(price).toFixed(2);
+
     try {
         await fetch(`${API_URL}?action=updatePrice&price=${price}`);
+        document.getElementById("priceTag").innerText = price; // อัปเดตตัวเลขที่มุมจอทันที
+        
         Swal.fire({
             title: 'Price Updated',
+            text: `ราคาใหม่: ${price} THB`,
             icon: 'success',
             toast: true,
             position: 'top',
             showConfirmButton: false,
-            timer: 2000,
+            timer: 1500,
             background: '#111',
             color: '#fff'
         });
         localStorage.removeItem("latest_price");
-    } catch (error) {
-        Swal.fire({ title: 'Error!', text: 'บันทึกไม่สำเร็จ', icon: 'error', background:'#111', color:'#fff' });
+    } catch (e) {
+        alert("Error: " + e);
     }
 }
+
+async function openDoor() {
+    if(!confirm("Open Front Door?")) return;
+    const btn = document.getElementById("doorBtn");
+    btn.disabled = true;
+    try {
+        await fetch(`${API_URL}?action=openDoor`, { mode: 'no-cors' });
+        setTimeout(() => { btn.disabled = false; }, 3000);
+    } catch (e) {
+        btn.disabled = false;
+    }
+}
+
+// โหลดราคาปัจจุบันมาโชว์ที่มุมจอตอนเปิดหน้า
+async function loadCurrentPrice() {
+    try {
+        const res = await fetch(`${API_URL}?action=getPrice`);
+        const data = await res.json();
+        if(data && data.price) {
+            document.getElementById("priceTag").innerText = parseFloat(data.price).toFixed(2);
+        }
+    } catch(e) {}
+}
+loadCurrentPrice();
 </script>
 </body>
 </html>
