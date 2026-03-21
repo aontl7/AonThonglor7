@@ -1,41 +1,40 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Manager Panel - Thonglor 7</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        body { margin: 0; font-family: -apple-system, sans-serif; background: #000; color: #fff; text-align: center; padding-bottom: 60px; }
-        .header-img { width: 100%; height: 240px; object-fit: cover; display: block; }
-        .box { background: #111; margin: -30px auto 30px; padding: 25px; border-radius: 32px; max-width: 450px; border: 1px solid #222; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        h2 { margin-top: 0; font-size: 20px; border-bottom: 1px solid #222; padding-bottom: 15px; color: #fff; letter-spacing: 1px; }
-        .section { margin-bottom: 24px; text-align: left; background: #161616; padding: 18px; border-radius: 20px; border: 1px solid #222; }
-        .section-title { font-size: 11px; color: #666; font-weight: 800; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1.5px; display: flex; align-items: center; gap: 8px; }
-        
-        /* Booking Table */
-        .booking-list { width: 100%; border-collapse: collapse; margin-top: 5px; }
-        .booking-list th { color: #444; text-align: left; padding: 8px; font-size: 11px; border-bottom: 1px solid #222; }
-        .booking-list td { padding: 12px 8px; border-bottom: 1px solid #1a1a1a; font-size: 14px; color: #ddd; }
-        .badge { background: #222; color: #888; padding: 2px 8px; border-radius: 8px; font-size: 10px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Manager Panel - Thonglor 7</title>
+<script src="config.js"></script> <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+/* OLED Black Professional Style */
+body{margin:0;font-family:-apple-system,sans-serif;background:#000;color:#fff;text-align:center;padding-bottom:60px;}
+.header-img{width:100%;height:220px;object-fit:cover;display:block;}
+.box{background:#111;margin:-25px auto 30px;padding:25px;border-radius:24px;max-width:420px;border:1px solid #222;position:relative;}
+h2{margin-top:0;font-size:18px;border-bottom:1px solid #333;padding-bottom:15px;color:#888;}
+.section{margin-bottom:20px;text-align:left;background:#1a1a1a;padding:15px;border-radius:14px;border:1px solid #222;}
+.section-title{font-size:11px;color:#666;font-weight:bold;margin-bottom:12px;text-transform:uppercase;}
 
-        /* Price Group */
-        .price-group { display: flex; align-items: center; background: #222; border: 1px solid #333; border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
-        .price-group input { width: 50%; border: none; padding: 16px; font-size: 28px; text-align: right; background: transparent; color: #fff; outline: none; font-weight: 700; }
-        .price-group .fixed-unit { width: 50%; background: #2a2a2a; padding: 16px; font-size: 28px; color: #888; text-align: left; border-left: 1px solid #333; }
-        
-        .btn { width: 100%; padding: 18px; font-size: 16px; font-weight: 700; border: none; border-radius: 16px; cursor: pointer; margin-top: 5px; }
-        .primary { background: #fff; color: #000; }
-        .door-btn { background: #400; color: #f44; height: 80px; font-size: 18px; border: 1px solid #600; text-transform: uppercase; }
-        .line-btn { background: #111; color: #06C755; border: 1px solid #222; margin-bottom: 10px; text-decoration: none; display: flex; align-items: center; justify-content: center; height: 50px; border-radius: 14px; font-weight: 600; }
-    </style>
+/* Booking Table */
+.booking-list{width:100%;border-collapse:collapse;margin-top:5px;font-size:13px;}
+.booking-list th{color:#444;text-align:left;padding:8px;border-bottom:1px solid #222;}
+.booking-list td{padding:12px 8px;border-bottom:1px solid #1a1a1a;color:#ccc;}
+
+/* Price Group */
+.price-group{display:flex;align-items:center;background:#222;border:1px solid #333;border-radius:12px;overflow:hidden;}
+.price-group input{width:50%;border:none;padding:14px;font-size:24px;text-align:right;background:transparent;color:#fff;outline:none;}
+.price-group .fixed-unit{width:50%;background:#333;padding:14px;font-size:24px;color:#aaa;text-align:left;border-left:1px solid #444;font-weight:bold;}
+
+.btn{width:100%;padding:16px;font-size:16px;font-weight:bold;border:none;border-radius:12px;cursor:pointer;margin-top:5px;}
+.primary{background:#fff;color:#000;}
+.door-btn{background:#400;color:#fff;height:70px;font-size:20px;border:1px solid #600;}
+.line-btn{background:#111;color:#06C755;border:1px solid #222;margin-bottom:10px;text-decoration:none;display:block;text-align:center;line-height:45px;border-radius:12px;}
+</style>
 </head>
+
 <body>
-
 <img src="building.PNG" class="header-img">
-
 <div class="box">
-    <h2>SYSTEM CONTROL</h2>
+    <h2>SYSTEM CONTROL PANEL</h2>
 
     <div class="section">
         <div class="section-title">🔓 DOOR CONTROL</div>
@@ -43,91 +42,86 @@
     </div>
 
     <div class="section">
-        <div class="section-title">📅 RECENT BOOKINGS</div>
+        <div class="section-title">📅 RECENT BOOKINGS (5 ล่าสุด)</div>
         <table class="booking-list">
             <thead>
-                <tr>
-                    <th>วันที่</th>
-                    <th>ชื่อลูกค้า</th>
-                    <th>ประเภท</th>
-                </tr>
+                <tr><th>วันที่</th><th>ชื่อลูกค้า</th><th>ประเภท</th></tr>
             </thead>
             <tbody id="bookingBody">
-                <tr><td colspan="3" style="text-align:center; padding:20px; color:#444;">กำลังโหลด...</td></tr>
+                <tr><td colspan="3" style="text-align:center; padding:15px; color:#444;">กำลังดึงข้อมูล...</td></tr>
             </tbody>
         </table>
     </div>
 
     <div class="section">
-        <div class="section-title">💰 ROOM PRICE SETTING</div>
+        <div class="section-title">💰 ROOM PRICE (พัน/ร้อย/สิบ)</div>
         <div class="price-group">
-            <input type="number" id="basePrice" placeholder="000" inputmode="numeric">
-            <div class="fixed-unit">0.00</div>
+            <input type="number" id="basePrice" placeholder="000">
+            <div class="fixed-unit">0.00 THB</div>
         </div>
-        <button class="btn primary" onclick="updatePrice()">UPDATE PRICE</button>
+        <button class="btn primary" onclick="updatePrice()" style="margin-top:10px;">UPDATE PRICE</button>
     </div>
 
     <div class="section">
-        <div class="section-title">📞 STAFF QUICK CALL</div>
+        <div class="section-title">📞 STAFF SERVICE</div>
         <a href="https://line.me/R/msg/text/?เรียกแม่บ้าน" class="line-btn">CALL MAID</a>
         <a href="https://line.me/R/msg/text/?ส่งซักผ้า" class="line-btn">LAUNDRY SERVICE</a>
     </div>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyhgz12OXm9jX9RaDS7Vaek6b63pMibw0bh4AyoAzO9oSMamasxTIBoIFCAjlTigZwZ/exec";
-
-    async function loadData() {
-        try {
-            const res = await fetch(`${API_URL}?action=getPrice`);
-            const data = await res.json();
-            
-            // อัปเดตตารางจอง
-            const body = document.getElementById("bookingBody");
-            body.innerHTML = "";
-            
-            if (data.recent && data.recent.length > 0) {
-                data.recent.forEach(item => {
-                    body.innerHTML += `<tr>
-                        <td>${item.date}</td>
-                        <td>${item.name || 'ไม่ระบุ'}</td>
-                        <td><span class="badge">${item.type || 'Fast'}</span></td>
-                    </tr>`;
-                });
-            } else {
-                body.innerHTML = "<tr><td colspan='3' style='text-align:center;'>ยังไม่มีข้อมูลการจอง</td></tr>";
-            }
-        } catch (e) {
-            document.getElementById("bookingBody").innerHTML = "<tr><td colspan='3'>เชื่อมต่อผิดพลาด</td></tr>";
-        }
-    }
-
-    async function updatePrice() {
-        const input = document.getElementById("basePrice").value;
-        if (!input) return Swal.fire({ title: 'ระบุตัวเลขก่อนค่ะบอส', icon: 'warning', background: '#111', color: '#fff' });
+// ดึงค่าจาก API_URL ที่ประกาศไว้ใน config.js เท่านั้น ห้ามประกาศ API_URL ซ้ำตรงนี้
+async function loadData() {
+    if (typeof API_URL === 'undefined') return;
+    try {
+        const res = await fetch(`${API_URL}?action=getPrice`);
+        const data = await res.json();
+        const body = document.getElementById("bookingBody");
+        body.innerHTML = "";
         
-        const finalVal = input + "0.00";
-        Swal.fire({ title: 'Updating...', background: '#111', color: '#fff', didOpen: () => Swal.showLoading() });
-
-        try {
-            const res = await fetch(`${API_URL}?action=updatePrice&price=${finalVal}`);
-            const data = await res.json();
-            if (data.status === "success") {
-                Swal.fire({ title: 'Updated!', icon: 'success', timer: 1500, showConfirmButton: false, background: '#111', color: '#fff' });
-                document.getElementById("basePrice").value = "";
-            }
-        } catch (e) { Swal.fire({ title: 'Error', icon: 'error' }); }
-    }
-
-    async function openDoor() {
-        const result = await Swal.fire({ title: 'เปิดประตูหน้าบ้าน?', icon: 'warning', showCancelButton: true, confirmButtonText: 'ใช่', background: '#111', color: '#fff' });
-        if (result.isConfirmed) {
-            fetch(`${API_URL}?action=openDoor`, { mode: 'no-cors' });
-            Swal.fire({ title: 'สั่งการสำเร็จ', icon: 'success', timer: 2000, showConfirmButton: false, background: '#111', color: '#fff' });
+        if (data.recent && data.recent.length > 0) {
+            data.recent.forEach(item => {
+                body.innerHTML += `<tr><td>${item.date}</td><td>${item.name || '-'}</td><td>${item.type || 'Fast'}</td></tr>`;
+            });
+        } else {
+            body.innerHTML = "<tr><td colspan='3' style='text-align:center;'>ไม่มีรายการจอง</td></tr>";
         }
+    } catch (e) {
+        document.getElementById("bookingBody").innerHTML = "<tr><td colspan='3' style='text-align:center;'>รอข้อมูลอัปเดต...</td></tr>";
+    }
+}
+
+async function updatePrice() {
+    let priceInput = document.getElementById("basePrice").value;
+    if(!priceInput) {
+        Swal.fire({ title: 'ระบุเลข 3 หลักด้วยค่ะบอส', icon: 'error', background: '#111', color: '#fff' });
+        return;
     }
 
-    document.addEventListener('DOMContentLoaded', loadData);
+    const finalVal = priceInput + "0.00";
+    Swal.fire({ title: 'กำลังอัปเดต...', background: '#111', color: '#fff', didOpen: () => Swal.showLoading() });
+
+    try {
+        const res = await fetch(`${API_URL}?action=updatePrice&price=${finalVal}`);
+        const data = await res.json();
+        if(data.status === "success") {
+            Swal.fire({ title: 'Updated!', text: `ราคาใหม่: ${finalVal}`, icon: 'success', timer: 2000, showConfirmButton: false, background: '#111', color: '#fff' });
+            document.getElementById("basePrice").value = "";
+        }
+    } catch (e) {
+        Swal.fire({ title: 'Error', text: 'เชื่อมต่อชีทไม่ได้', icon: 'error', background: '#111', color: '#fff' });
+    }
+}
+
+async function openDoor() {
+    const result = await Swal.fire({ title: 'เปิดประตู?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#fff', confirmButtonTextColor: '#000', background: '#111', color: '#fff' });
+    if (result.isConfirmed) {
+        fetch(`${API_URL}?action=openDoor`, { mode: 'no-cors' });
+        Swal.fire({ title: 'สั่งการสำเร็จ', icon: 'success', timer: 2000, showConfirmButton: false, background: '#111', color: '#fff' });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadData);
 </script>
 </body>
 </html>
