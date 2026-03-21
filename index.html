@@ -92,15 +92,22 @@
     <a class="btn-secondary" href="booking.html">📅 จองล่วงหน้า</a>
 
     <div class="map-container">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.786!2d100.582!3d13.731!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDQzJzUxLjYiTiAxMDDCsDM0JzU1LjIiRQ!5e0!3m2!1sth!2sth!4v1647850000000" 
-            width="100%" height="280" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3875.7970912943456!2d100.579367!3d13.7307312!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29fac9dbff2a3%3A0x6f9b0a8cc8a0d9b8!2s143%2F6%20Sing%20Waet%20Lom%20Alley%2C%20Khwaeng%20Khlong%20Tan%20Nuea%2C%20Watthana%2C%20Krung%20Thep%20Maha%20Nakhon%2010110!5e0!3m2!1sen!2sth!4v1774057508289!5m2!1sen!2sth" 
+            width="100%" 
+            height="280" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
     </div>
     
     <div class="footer-note">รองรับการจองผ่านระบบอัตโนมัติ • ข้อมูลปลอดภัย</div>
 </div>
 
 <script>
-    // --- 1. ใส่ URL ของ Web App จาก Google Apps Script ตรงนี้ ---
+    // --- URL ของ Web App จาก Google Apps Script ---
     const API_URL = "https://script.google.com/macros/s/AKfycbyhgz12OXm9jX9RaDS7Vaek6b63pMibw0bh4AyoAzO9oSMamasxTIBoIFCAjlTigZwZ/exec";
 
     // ฟังก์ชันดึงราคา (GET)
@@ -110,7 +117,6 @@
             const res = await fetch(`${API_URL}?action=getPrice`);
             const data = await res.json();
             if (data.status === "success" && data.price) {
-                // จัดรูปแบบราคาให้มีคอมม่าและทศนิยม 2 ตำแหน่ง
                 const price = parseFloat(data.price).toLocaleString(undefined, {
                     minimumFractionDigits: 2, 
                     maximumFractionDigits: 2 
@@ -136,9 +142,8 @@
             const data = await res.json();
             
             const today = new Date();
-            const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+            const todayStr = today.toISOString().split('T')[0];
             
-            // เช็ควันว่าง
             if (data.bookedDates && data.bookedDates.includes(todayStr)) {
                 Swal.fire({ title: 'ขออภัย', text: 'คืนนี้มีคนจองไปแล้วค่ะ', icon: 'error', background: '#111', color: '#fff' });
                 btn.disabled = false;
@@ -146,7 +151,6 @@
                 return;
             }
 
-            // ถ้าว่าง ส่งไปหน้า Payment
             const tomorrow = new Date(today);
             tomorrow.setDate(today.getDate() + 1);
             
@@ -167,7 +171,6 @@
         }
     }
 
-    // เริ่มทำงานเมื่อโหลดหน้า
     document.addEventListener('DOMContentLoaded', () => {
         fetchPrice();
         document.getElementById('btnFastCheckin').addEventListener('click', () => {
