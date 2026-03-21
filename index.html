@@ -1,127 +1,191 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Aon Thonglor 7 - Premium Boutique Room</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* OLED Black Style */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: #000; 
+            color: #fff; 
+            line-height: 1.5; 
+        }
+        .hero { position: relative; height: 320px; overflow: hidden; }
+        .hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .container { 
+            background: #111; 
+            border-radius: 32px 32px 0 0; 
+            margin-top: -28px; 
+            position: relative; 
+            padding: 28px 20px 40px; 
+            border: 1px solid rgba(255,255,255,0.08); 
+            border-top: none; 
+        }
+        h1 { 
+            font-size: 32px; font-weight: 700; margin-bottom: 4px; 
+            background: linear-gradient(135deg, #fff 0%, #ccc 100%); 
+            -webkit-background-clip: text; background-clip: text; color: transparent; 
+        }
+        .subtitle { color: #888; font-size: 15px; margin-bottom: 20px; }
+        .price-card { 
+            background: #1a1a1a; border-radius: 24px; padding: 16px 20px; 
+            margin: 16px 0; border: 1px solid #2a2a2a; 
+        }
+        .price-label { font-size: 14px; color: #aaa; margin-bottom: 6px; }
+        .price-value { font-size: 36px; font-weight: 800; color: #fff; }
+        .price-value small { font-size: 16px; font-weight: 400; color: #888; }
+        .checkin-badge { 
+            display: inline-flex; align-items: center; gap: 8px; 
+            background: #1a1a1a; padding: 8px 16px; border-radius: 40px; 
+            font-size: 14px; color: #ccc; margin-bottom: 16px; 
+        }
+        .facilities { display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0; justify-content: center; }
+        .facility-item { background: #1a1a1a; padding: 8px 16px; border-radius: 30px; font-size: 13px; color: #ddd; }
+        .btn-primary { 
+            display: block; width: 100%; max-width: 320px; margin: 16px auto; 
+            background: #fff; color: #000; text-align: center; padding: 16px; 
+            border-radius: 60px; font-weight: 700; font-size: 17px; border: none; cursor: pointer; 
+        }
+        .btn-secondary { 
+            display: block; width: 100%; max-width: 320px; margin: 12px auto; 
+            background: transparent; color: #ccc; text-align: center; padding: 15px; 
+            border-radius: 60px; font-weight: 600; border: 1px solid #333; text-decoration: none; 
+        }
+        .map-container { margin: 32px 0; border-radius: 28px; overflow: hidden; border: 1px solid #2a2a2a; }
+        .footer-note { text-align: center; font-size: 12px; color: #555; margin-top: 24px; }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <img src="room.png" alt="Aon Thonglor 7" onerror="this.src='https://placehold.co/800x600/1a1a1a/666?text=Aon+Thonglor+7'">
+</div>
+
+<div class="container">
+    <h1>Aon Thonglor 7</h1>
+    <div class="subtitle">Boutique Room • Thonglor • Bangkok</div>
+    
+    <div class="price-card">
+        <div class="price-label">ราคาคืนนี้ (รวมภาษี)</div>
+        <div class="price-value">
+            <span id="displayPrice">...</span> <small>THB / Night</small>
+        </div>
+    </div>
+    
+    <div class="checkin-badge">
+        <span>🕒</span> Self Check-in 24 ชม. 🛡️ ปลอดภัย มั่นใจ
+    </div>
+    
+    <div class="facilities">
+        <span class="facility-item">📶 WiFi เร็ว</span>
+        <span class="facility-item">❄️ แอร์เย็น</span>
+        <span class="facility-item">🚿 น้ำร้อน</span>
+        <span class="facility-item">🧊 ตู้เย็น</span>
+    </div>
+
+    <button class="btn-primary" id="btnFastCheckin">⚡ Fast Check-in (คืนนี้)</button>
+    <a class="btn-secondary" href="booking.html">📅 จองล่วงหน้า</a>
+
+    <div class="map-container">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.786!2d100.582!3d13.731!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDQzJzUxLjYiTiAxMDDCsDM0JzU1LjIiRQ!5e0!3m2!1sth!2sth!4v1647850000000" 
+            width="100%" height="280" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+    
+    <div class="footer-note">รองรับการจองผ่านระบบอัตโนมัติ • ข้อมูลปลอดภัย</div>
+</div>
+
 <script>
-// 1. วาง URL ของ Web App ที่ได้จาก Google Apps Script ที่นี่
-const CONFIG_API_URL = "https://script.google.com/macros/s/AKfycbyhgz12OXm9jX9RaDS7Vaek6b63pMibw0bh4AyoAzO9oSMamasxTIBoIFCAjlTigZwZ/exec";
+    // --- 1. ใส่ URL ของ Web App จาก Google Apps Script ตรงนี้ ---
+    const API_URL = "https://script.google.com/macros/s/AKfycbyhgz12OXm9jX9RaDS7Vaek6b63pMibw0bh4AyoAzO9oSMamasxTIBoIFCAjlTigZwZ/exec";
 
-// ฟังก์ชันดึงราคาและวันที่จองจาก Google Sheets
-async function syncRoomData() {
-    const priceEl = document.getElementById("displayPrice");
-    
-    try {
-        // เรียกใช้ action=getPrice ตามที่เขียนใน Apps Script
-        const response = await fetch(`${CONFIG_API_URL}?action=getPrice`);
-        const data = await response.json();
-        
-        if (data.status === "success" && data.price) {
-            // แปลงเป็นตัวเลขและใส่คอมม่า พร้อมทศนิยม 2 ตำแหน่ง
-            const numericPrice = parseFloat(data.price);
-            const formattedPrice = numericPrice.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-            
-            priceEl.innerText = formattedPrice;
-            
-            // บันทึกค่าลง LocalStorage เผื่อเน็ตหลุดครั้งหน้า
-            localStorage.setItem("latest_price", data.price);
-            if (data.bookedDates) {
-                localStorage.setItem("cached_booked_dates", JSON.stringify(data.bookedDates));
+    // ฟังก์ชันดึงราคา (GET)
+    async function fetchPrice() {
+        const priceEl = document.getElementById("displayPrice");
+        try {
+            const res = await fetch(`${API_URL}?action=getPrice`);
+            const data = await res.json();
+            if (data.status === "success" && data.price) {
+                // จัดรูปแบบราคาให้มีคอมม่าและทศนิยม 2 ตำแหน่ง
+                const price = parseFloat(data.price).toLocaleString(undefined, {
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                });
+                priceEl.innerText = price;
+                localStorage.setItem("cached_price", data.price);
             }
-        }
-    } catch (error) {
-        console.error("เชื่อมต่อ API ไม่ได้:", error);
-        // ถ้าดึงไม่ได้ ให้ใช้ราคาล่าสุดที่เคยบันทึกไว้
-        const saved = localStorage.getItem("latest_price");
-        if (saved) {
-            priceEl.innerText = parseFloat(saved).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        } else {
-            priceEl.innerText = "1,251.21"; // ราคาสำรองกรณี error ครั้งแรก
+        } catch (e) {
+            console.error("Fetch Error:", e);
+            const saved = localStorage.getItem("cached_price");
+            priceEl.innerText = saved ? parseFloat(saved).toLocaleString() : "1,251.21";
         }
     }
-}
 
-// ฟังก์ชันแปลงวันที่เป็น YYYY-MM-DD
-function getLocalYYYYMMDD(date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-}
+    // ฟังก์ชันจองด่วน (Fast Check-in)
+    async function doFastCheckin() {
+        const btn = document.getElementById('btnFastCheckin');
+        btn.disabled = true;
+        btn.innerText = "⏳ กำลังตรวจสอบ...";
 
-// ระบบ Fast Check-in (จองวันนี้)
-async function fastCheckIn() {
-    const btn = document.getElementById('btnFastCheckin');
-    btn.disabled = true;
-    btn.innerHTML = "⏳ กำลังตรวจสอบ...";
+        try {
+            const res = await fetch(`${API_URL}?action=getPrice`);
+            const data = await res.json();
+            
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+            
+            // เช็ควันว่าง
+            if (data.bookedDates && data.bookedDates.includes(todayStr)) {
+                Swal.fire({ title: 'ขออภัย', text: 'คืนนี้มีคนจองไปแล้วค่ะ', icon: 'error', background: '#111', color: '#fff' });
+                btn.disabled = false;
+                btn.innerText = "⚡ Fast Check-in (คืนนี้)";
+                return;
+            }
 
-    try {
-        const response = await fetch(`${CONFIG_API_URL}?action=getPrice`);
-        const data = await response.json();
-        
-        const today = new Date();
-        const checkinStr = getLocalYYYYMMDD(today);
-        
-        // เช็คว่าวันนี้เต็มหรือยัง
-        if (data.bookedDates && data.bookedDates.includes(checkinStr)) {
-            Swal.fire({
-                title: '❌ คืนนี้เต็มแล้ว',
-                text: 'ขออภัยค่ะ มีผู้เข้าพักท่านอื่นจองตัดหน้าไปแล้ว',
-                icon: 'error',
-                background: '#111',
-                color: '#fff'
-            });
+            // ถ้าว่าง ส่งไปหน้า Payment
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            
+            const bookingObj = {
+                checkin: todayStr,
+                checkout: tomorrow.toISOString().split('T')[0],
+                totalPrice: data.price || "1251.21",
+                type: "Fast Check-in"
+            };
+            
+            localStorage.setItem("pendingBooking", JSON.stringify(bookingObj));
+            window.location.href = "payment.html";
+
+        } catch (e) {
+            Swal.fire({ title: 'Error', text: 'การเชื่อมต่อขัดข้อง', icon: 'error' });
             btn.disabled = false;
-            btn.innerHTML = "⚡ Fast Check-in (คืนนี้)";
-            return;
+            btn.innerText = "⚡ Fast Check-in (คืนนี้)";
         }
-
-        // ถ้าว่าง ให้ไปหน้าชำระเงิน
-        const currentPrice = data.price || "1251.21";
-        const tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1);
-
-        const bookingInfo = {
-            checkin: checkinStr,
-            checkout: getLocalYYYYMMDD(tomorrow),
-            totalPrice: currentPrice,
-            type: "Fast Check-in"
-        };
-
-        localStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
-        // ส่งต่อไปยังหน้าชำระเงิน (ระบุชื่อไฟล์ให้ถูก)
-        window.location.href = "payment.html";
-
-    } catch (error) {
-        Swal.fire({ title: 'เกิดข้อผิดพลาด', text: 'กรุณาลองใหม่อีกครั้ง', icon: 'error' });
-        btn.disabled = false;
-        btn.innerHTML = "⚡ Fast Check-in (คืนนี้)";
     }
-}
 
-// ผูกฟังก์ชันกับปุ่มเมื่อโหลดหน้าเว็บ
-document.addEventListener('DOMContentLoaded', function() {
-    syncRoomData();
-    
-    const btn = document.getElementById('btnFastCheckin');
-    if (btn) {
-        btn.addEventListener('click', () => {
+    // เริ่มทำงานเมื่อโหลดหน้า
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchPrice();
+        document.getElementById('btnFastCheckin').addEventListener('click', () => {
             Swal.fire({
-                title: 'ยืนยันเข้าพักคืนนี้?',
-                text: "ระบบจะพาคุณไปหน้าชำระเงินทันที",
+                title: 'จองเข้าพักคืนนี้?',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'ตกลง',
                 cancelButtonText: 'ยกเลิก',
-                background: '#111',
-                color: '#fff',
                 confirmButtonColor: '#fff',
-                confirmButtonTextColor: '#000'
+                background: '#111',
+                color: '#fff'
             }).then((result) => {
-                if (result.isConfirmed) fastCheckIn();
+                if (result.isConfirmed) doFastCheckin();
             });
         });
-    }
-});
+    });
 </script>
+
+</body>
+</html>
