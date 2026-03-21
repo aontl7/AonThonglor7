@@ -20,8 +20,9 @@ h1{font-size:36px;margin:10px 0;}
 .button{display:block;background:#fff;color:#000;text-decoration:none;padding:18px;margin:12px auto;max-width:320px;border-radius:14px;font-size:18px;cursor:pointer;border:none;width:100%;box-sizing:border-box;font-weight:bold;}
 .button.secondary{background:#000;color:#444;border:1px solid #222;}
 .button:disabled {background:#444;color:#888;cursor:not-allowed;}
-/* ส่วนแสดงแผนที่ */
 .map{margin-top:40px;border-radius:20px;overflow:hidden;border:1px solid #333;}
+/* สไตล์แผนที่ของบอส - เอา filter grayscale/invert ออกทั้งหมด */
+iframe{width:100%;height:350px;border:0;}
 </style>
 </head>
 <body>
@@ -48,15 +49,7 @@ h1{font-size:36px;margin:10px 0;}
     </a>
 
     <div class="map">
-        <iframe 
-            src="http://googleusercontent.com/maps.google.com/9" 
-            width="100%" 
-            height="350" 
-            style="border:0;" 
-            allowfullscreen="" 
-            loading="lazy" 
-            referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
+        <iframe src="https://www.google.com/maps/embed?pb=YOUR_MAP_EMBED_URL"></iframe>
     </div>
 </div>
 
@@ -73,13 +66,14 @@ function getLocalYYYYMMDD(date) {
     return `${y}-${m}-${d}`;
 }
 
-// 2. ซิงค์ราคาล่าสุดจาก Sheets (ช่อง B1)
+// 2. ซิงค์ราคาล่าสุดจาก Sheets (ช่อง B1) - รองรับ X.xx
 async function syncPrice() {
     try {
         const response = await fetch(`${API_URL}?action=getPrice&t=${new Date().getTime()}`);
         const data = await response.json();
-        if(data.price) {
-            // โชว์ราคา X.xx ตรงๆ ไม่ปัดเศษ
+        
+        // ดึงราคา/รหัส X.xx ของบอสตรงๆ ไม่ต้องปัดเศษ
+        if(data && data.price) {
             document.getElementById("displayPrice").innerText = data.price;
             localStorage.setItem("latest_price", data.price);
         }
@@ -128,9 +122,9 @@ async function fastCheckIn() {
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
 
-    // ดักสถานะห้องว่าง (ถ้าบอสมีระบบ bookedDates ใน Sheets)
+    // เช็กสถานะห้องว่าง
     if(data.bookedDates && data.bookedDates.includes(checkinStr)) {
-       Swal.fire({ title: 'Full!', text: 'วันนี้ห้องเต็มแล้วค่ะบอส', icon: 'error', background:'#111', color:'#fff' });
+       Swal.fire({ title: 'Full!', text: 'วันนี้ห้องเต็มแล้วค่ะ', icon: 'error', background:'#111', color:'#fff' });
        btn.disabled = false;
        btn.innerText = "Fast Check-in (เข้าพักวันนี้)";
        return; 
