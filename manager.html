@@ -9,7 +9,7 @@
 <style>
 /* OLED Black Professional Style - iPhone 13 Pro Max */
 body{margin:0;font-family:-apple-system,sans-serif;background:#000;color:#fff;text-align:center;padding-bottom:60px;}
-/* รูปสว่าง 100% ตามต้นฉบับบอส ห้ามมืดเด็ดขาด */
+/* รูปสว่าง 100% ตามต้นฉบับบอส ห้ามใส่ filter มืดเด็ดขาด */
 .header-img{width:100%;height:220px;object-fit:cover;}
 .box{background:#111;margin:-25px auto 30px;padding:25px;border-radius:24px;max-width:420px;border:1px solid #222;position:relative;}
 h2{margin-top:0;font-size:18px;border-bottom:1px solid #333;padding-bottom:15px;color:#888;}
@@ -17,7 +17,7 @@ h2{margin-top:0;font-size:18px;border-bottom:1px solid #333;padding-bottom:15px;
 .section-title{font-size:12px;color:#666;font-weight:bold;margin-bottom:12px;text-transform:uppercase;}
 .price-group{display:flex;align-items:center;background:#222;border:1px solid #333;border-radius:12px;overflow:hidden;}
 
-/* ช่องกรอกที่ลูกน้องแก้ได้แค่หลักพัน/ร้อย/สิบ (ล็อกหลักหน่วยเป็น 0) */
+/* ช่องกรอกรับค่า พัน/ร้อย/สิบ (หลักหน่วยห้ามแก้) */
 .price-group input{width:50%;border:none;padding:14px;font-size:24px;text-align:right;background:transparent;color:#fff;outline:none;}
 /* ส่วนหลักหน่วยและทศนิยม (0.00) ที่ระบบบอสจะมาจัดการเอง */
 .price-group .fixed-unit{width:50%;background:#333;padding:14px;font-size:24px;color:#aaa;text-align:left;border-left:1px solid #444;font-weight:bold;letter-spacing:2px;}
@@ -41,9 +41,9 @@ h2{margin-top:0;font-size:18px;border-bottom:1px solid #333;padding-bottom:15px;
     </div>
 
     <div class="section">
-        <div class="section-title">💰 ROOM PRICE (แก้หลักพัน/ร้อย/สิบ)</div>
+        <div class="section-title">💰 ROOM PRICE (พัน/ร้อย/สิบ)</div>
         <div class="price-group">
-            <input type="number" id="basePrice" placeholder="เช่น 123" step="10" oninput="this.value = Math.floor(this.value/10)*10">
+            <input type="number" id="basePrice" placeholder="000" step="1">
             <div class="fixed-unit">0.00 THB</div>
         </div>
         <button class="btn primary" onclick="updatePrice()" style="margin-top:10px;">UPDATE PRICE</button>
@@ -59,21 +59,20 @@ h2{margin-top:0;font-size:18px;border-bottom:1px solid #333;padding-bottom:15px;
 <script>
 async function updatePrice() {
     let priceInput = document.getElementById("basePrice").value;
-    if(!priceInput || priceInput < 0) {
+    if(!priceInput) {
         Swal.fire({ title: 'ระบุตัวเลขด้วยค่ะบอส', icon: 'error', background: '#111', color: '#fff' });
         return;
     }
 
-    // ล็อกหลักหน่วยเป็น 0 และทศนิยมเป็น .00 เพื่อให้ระบบบอสจัดการต่อเอง
-    // เช่น กรอก 1230 จะส่งไปเป็น 1230.00
-    const finalVal = parseInt(priceInput).toFixed(2);
+    // รวมร่างเลขหลักพัน/ร้อย/สิบ เข้ากับ 0.00 (หลักหน่วย+ทศนิยม) เพื่อเว้นที่ให้ระบบบอส
+    const finalVal = priceInput + "0.00";
 
     try {
         await fetch(`${API_URL}?action=updatePrice&price=${finalVal}`);
         
         Swal.fire({
             title: 'Updated!',
-            text: `ส่งค่า ${finalVal} ไปยังระบบ (เว้น 0.00 ไว้ให้ระบบบอส)`,
+            text: `Data: ${finalVal}`,
             icon: 'success',
             toast: true,
             position: 'top',
