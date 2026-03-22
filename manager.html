@@ -45,25 +45,25 @@ h2{margin-top:0;font-size:18px;border-bottom:1px solid #333;padding-bottom:15px;
     </div>
 
     <div class="section">
-        <div class="section-title">💰 WEEKDAY PRICE (B1)</div>
+        <div class="section-title">💰 WEEKDAY PRICE (พัน/ร้อย/สิบ)</div>
         <div class="price-group">
-            <input type="number" id="weekdayPrice" placeholder="1250">
-            <div class="fixed-unit">.00 THB</div>
+            <input type="number" id="weekdayPrice" placeholder="000">
+            <div class="fixed-unit">0.00 THB</div>
         </div>
-        <button class="btn primary" onclick="updatePrice('weekday')">UPDATE WEEKDAY</button>
+        <button class="btn primary" onclick="updatePrice('weekday')">UPDATE WEEKDAY (B1)</button>
     </div>
 
     <div class="section">
-        <div class="section-title" style="color:#ff4444;">🔥 WEEKEND PRICE (C1-E1)</div>
+        <div class="section-title" style="color:#ff4444;">🔥 WEEKEND PRICE CONTROL</div>
         <select id="weekendDaySelect" class="date-selector">
-            <option value="all">อัปเดตทั้ง 3 วัน (ศุกร์-อาทิตย์)</option>
+            <option value="all">อัปเดตทั้ง 3 วัน (C1-E1)</option>
             <option value="fri">เฉพาะวันศุกร์ (C1)</option>
             <option value="sat">เฉพาะวันเสาร์ (D1)</option>
             <option value="sun">เฉพาะวันอาทิตย์ (E1)</option>
         </select>
         <div class="price-group">
-            <input type="number" id="weekendPrice" placeholder="1850">
-            <div class="fixed-unit">.00 THB</div>
+            <input type="number" id="weekendPrice" placeholder="000">
+            <div class="fixed-unit">0.00 THB</div>
         </div>
         <button class="btn weekend-btn" onclick="updatePrice('weekend')">UPDATE WEEKEND PRICE</button>
     </div>
@@ -90,6 +90,7 @@ async function loadData() {
         }
     } catch (e) { }
 }
+
 async function updatePrice(mode) {
     let priceInput, action;
     if(mode === 'weekday') {
@@ -103,22 +104,34 @@ async function updatePrice(mode) {
         else if(dayTarget === "sat") action = "updateSaturday";
         else if(dayTarget === "sun") action = "updateSunday";
     }
-    if(!priceInput) return;
+
+    if(!priceInput) {
+        Swal.fire({ title: 'ระบุเลข 3 หลักด้วยค่ะพี่ขา', icon: 'error', background: '#111', color: '#fff' });
+        return;
+    }
+
+    // คืนค่าลอจิกเดิม: ต่อท้ายด้วย 0.00 (หลักหน่วยเป็น 0 และหลักสตางค์เป็น .00)
+    const finalVal = priceInput + "0.00";
     Swal.fire({ title: 'กำลังอัปเดต...', background: '#111', color: '#fff', didOpen: () => Swal.showLoading() });
+
     try {
-        const res = await fetch(`${API_URL}?action=${action}&price=${priceInput}`);
+        const res = await fetch(`${API_URL}?action=${action}&price=${finalVal}`);
         const data = await res.json();
         if(data.status === "success") {
-            Swal.fire({ title: 'Updated!', icon: 'success', timer: 2000, showConfirmButton: false, background: '#111', color: '#fff' });
-            loadData();
+            Swal.fire({ title: 'Updated!', text: `ราคาใหม่: ${finalVal}`, icon: 'success', timer: 2000, showConfirmButton: false, background: '#111', color: '#fff' });
+            if(mode === 'weekday') document.getElementById("weekdayPrice").value = "";
+            else document.getElementById("weekendPrice").value = "";
         }
-    } catch (e) { }
+    } catch (e) {
+        Swal.fire({ title: 'Error', text: 'เชื่อมต่อชีทไม่ได้', icon: 'error', background: '#111', color: '#fff' });
+    }
 }
+
 async function openDoor() {
     const result = await Swal.fire({ title: 'เปิดประตู?', showCancelButton: true, background: '#111', color: '#fff' });
     if (result.isConfirmed) {
         fetch(`${API_URL}?action=openDoor`, { mode: 'no-cors' });
-        Swal.fire({ title: 'สั่งการสำเร็จ', icon: 'success', timer: 2000, background: '#111', color: '#fff' });
+        Swal.fire({ title: 'สั่งการสำเร็จ', icon: 'success', timer: 2000, showConfirmButton: false, background: '#111', color: '#fff' });
     }
 }
 document.addEventListener('DOMContentLoaded', loadData);
