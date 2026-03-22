@@ -6,26 +6,19 @@
 <title>Manager Panel - Thonglor 7</title>
 <script src="config.js"></script> <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
-/* OLED Black Professional Style */
 body{margin:0;font-family:-apple-system,sans-serif;background:#000;color:#fff;text-align:center;padding-bottom:60px;}
 .header-img{width:100%;height:220px;object-fit:cover;display:block;}
 .box{background:#111;margin:-25px auto 30px;padding:25px;border-radius:24px;max-width:420px;border:1px solid #222;position:relative;}
 h2{margin-top:0;font-size:18px;border-bottom:1px solid #333;padding-bottom:15px;color:#888;}
 .section{margin-bottom:20px;text-align:left;background:#1a1a1a;padding:15px;border-radius:14px;border:1px solid #222;}
 .section-title{font-size:11px;color:#666;font-weight:bold;margin-bottom:12px;text-transform:uppercase;}
-
-/* Booking Table */
 .booking-list{width:100%;border-collapse:collapse;margin-top:5px;font-size:13px;}
 .booking-list th{color:#444;text-align:left;padding:8px;border-bottom:1px solid #222;}
 .booking-list td{padding:12px 8px;border-bottom:1px solid #1a1a1a;color:#ccc;}
-
-/* Price Group & Select */
 .price-group{display:flex;align-items:center;background:#222;border:1px solid #333;border-radius:12px;overflow:hidden;margin-bottom:10px;}
 .price-group input{width:50%;border:none;padding:14px;font-size:24px;text-align:right;background:transparent;color:#fff;outline:none;}
 .price-group .fixed-unit{width:50%;background:#333;padding:14px;font-size:24px;color:#aaa;text-align:left;border-left:1px solid #444;font-weight:bold;}
-
 .date-selector{width:100%;padding:12px;font-size:14px;background:#222;color:#fff;border:1px solid #333;border-radius:12px;margin-bottom:12px;outline:none;cursor:pointer;}
-
 .btn{width:100%;padding:16px;font-size:16px;font-weight:bold;border:none;border-radius:12px;cursor:pointer;margin-top:5px;}
 .primary{background:#fff;color:#000;}
 .weekend-btn{background:#400;color:#fff;border:1px solid #600;}
@@ -33,60 +26,44 @@ h2{margin-top:0;font-size:18px;border-bottom:1px solid #333;padding-bottom:15px;
 .line-btn{background:#111;color:#06C755;border:1px solid #222;margin-bottom:10px;text-decoration:none;display:block;text-align:center;line-height:45px;border-radius:12px;}
 </style>
 </head>
-
 <body>
 <img src="building.PNG" class="header-img">
 <div class="box">
     <h2>SYSTEM CONTROL PANEL</h2>
-
     <div class="section">
         <div class="section-title">🔓 DOOR CONTROL</div>
         <button id="doorBtn" class="btn door-btn" onclick="openDoor()">OPEN FRONT DOOR</button>
     </div>
-
     <div class="section">
-        <div class="section-title">📅 RECENT BOOKINGS (5 ล่าสุด)</div>
+        <div class="section-title">📅 RECENT BOOKINGS</div>
         <table class="booking-list">
-            <thead>
-                <tr><th>วันที่</th><th>ชื่อลูกค้า</th><th>ประเภท</th></tr>
-            </thead>
-            <tbody id="bookingBody">
-                <tr><td colspan="3" style="text-align:center; padding:15px; color:#444;">กำลังดึงข้อมูล...</td></tr>
-            </tbody>
+            <thead><tr><th>วันที่</th><th>ชื่อลูกค้า</th><th>ประเภท</th></tr></thead>
+            <tbody id="bookingBody"><tr><td colspan="3" style="text-align:center;">กำลังดึงข้อมูล...</td></tr></tbody>
         </table>
     </div>
-
     <div class="section">
-        <div class="section-title">💰 WEEKDAY PRICE (MON-THU)</div>
+        <div class="section-title">💰 WEEKDAY PRICE (B1)</div>
         <div class="price-group">
-            <input type="number" id="weekdayPrice" placeholder="185">
-            <div class="fixed-unit">0.00 THB</div>
+            <input type="number" id="weekdayPrice" placeholder="1250">
+            <div class="fixed-unit">.00 THB</div>
         </div>
-        <button class="btn primary" onclick="updatePrice('weekday')">UPDATE WEEKDAY (B1)</button>
+        <button class="btn primary" onclick="updatePrice('weekday')">UPDATE WEEKDAY</button>
     </div>
-
     <div class="section">
-        <div class="section-title" style="color:#ff4444;">🔥 WEEKEND PRICE (FRI-SUN)</div>
+        <div class="section-title" style="color:#ff4444;">🔥 WEEKEND PRICE (C1-E1)</div>
         <select id="weekendDaySelect" class="date-selector">
-            <option value="all">อัปเดตทั้ง 3 วัน (C1, D1, E1)</option>
+            <option value="all">อัปเดตทั้ง 3 วัน (ศุกร์-อาทิตย์)</option>
             <option value="fri">เฉพาะวันศุกร์ (C1)</option>
             <option value="sat">เฉพาะวันเสาร์ (D1)</option>
             <option value="sun">เฉพาะวันอาทิตย์ (E1)</option>
         </select>
         <div class="price-group">
-            <input type="number" id="weekendPrice" placeholder="220">
-            <div class="fixed-unit">0.00 THB</div>
+            <input type="number" id="weekendPrice" placeholder="1850">
+            <div class="fixed-unit">.00 THB</div>
         </div>
         <button class="btn weekend-btn" onclick="updatePrice('weekend')">UPDATE WEEKEND PRICE</button>
     </div>
-
-    <div class="section">
-        <div class="section-title">📞 STAFF SERVICE</div>
-        <a href="https://line.me/R/msg/text/?เรียกแม่บ้าน" class="line-btn">CALL MAID</a>
-        <a href="https://line.me/R/msg/text/?ส่งซักผ้า" class="line-btn">LAUNDRY SERVICE</a>
-    </div>
 </div>
-
 <script>
 async function loadData() {
     if (typeof API_URL === 'undefined') return;
@@ -99,59 +76,40 @@ async function loadData() {
             data.recent.forEach(item => {
                 body.innerHTML += `<tr><td>${item.date}</td><td>${item.name || '-'}</td><td>${item.type || 'Fast'}</td></tr>`;
             });
-        } else {
-            body.innerHTML = "<tr><td colspan='3' style='text-align:center;'>ไม่มีรายการจอง</td></tr>";
         }
-    } catch (e) {
-        document.getElementById("bookingBody").innerHTML = "<tr><td colspan='3' style='text-align:center;'>รอข้อมูลอัปเดต...</td></tr>";
-    }
+    } catch (e) { }
 }
-
 async function updatePrice(mode) {
     let priceInput, action;
-    
     if(mode === 'weekday') {
         priceInput = document.getElementById("weekdayPrice").value;
         action = "updateWeekday";
     } else {
         priceInput = document.getElementById("weekendPrice").value;
         let dayTarget = document.getElementById("weekendDaySelect").value;
-        // แยก action ตาม dropdown
         if(dayTarget === "all") action = "updateWeekend";
         else if(dayTarget === "fri") action = "updateFriday";
         else if(dayTarget === "sat") action = "updateSaturday";
         else if(dayTarget === "sun") action = "updateSunday";
     }
-
-    if(!priceInput) {
-        Swal.fire({ title: 'ระบุราคาด้วยค่ะพี่ขา', icon: 'error', background: '#111', color: '#fff' });
-        return;
-    }
-
-    const finalVal = priceInput + "0.00";
+    if(!priceInput) return;
     Swal.fire({ title: 'กำลังอัปเดต...', background: '#111', color: '#fff', didOpen: () => Swal.showLoading() });
-
     try {
-        const res = await fetch(`${API_URL}?action=${action}&price=${finalVal}`);
+        const res = await fetch(`${API_URL}?action=${action}&price=${priceInput}`);
         const data = await res.json();
         if(data.status === "success") {
-            Swal.fire({ title: 'Updated!', text: `ราคาใหม่: ${finalVal}`, icon: 'success', timer: 2000, showConfirmButton: false, background: '#111', color: '#fff' });
-            if(mode === 'weekday') document.getElementById("weekdayPrice").value = "";
-            else document.getElementById("weekendPrice").value = "";
+            Swal.fire({ title: 'Updated!', icon: 'success', timer: 2000, showConfirmButton: false, background: '#111', color: '#fff' });
+            loadData();
         }
-    } catch (e) {
-        Swal.fire({ title: 'Error', text: 'เชื่อมต่อชีทไม่ได้', icon: 'error', background: '#111', color: '#fff' });
-    }
+    } catch (e) { }
 }
-
 async function openDoor() {
-    const result = await Swal.fire({ title: 'เปิดประตู?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#fff', confirmButtonTextColor: '#000', background: '#111', color: '#fff' });
+    const result = await Swal.fire({ title: 'เปิดประตู?', showCancelButton: true, background: '#111', color: '#fff' });
     if (result.isConfirmed) {
         fetch(`${API_URL}?action=openDoor`, { mode: 'no-cors' });
-        Swal.fire({ title: 'สั่งการสำเร็จ', icon: 'success', timer: 2000, showConfirmButton: false, background: '#111', color: '#fff' });
+        Swal.fire({ title: 'สั่งการสำเร็จ', icon: 'success', timer: 2000, background: '#111', color: '#fff' });
     }
 }
-
 document.addEventListener('DOMContentLoaded', loadData);
 </script>
 </body>
