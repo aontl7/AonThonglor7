@@ -6,7 +6,7 @@
     <title>Aon Thonglor 7 - Premium Boutique Room</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* OLED Black Style */
+        /* OLED Black Style - ออกแบบมาเพื่อ iPhone 13 Pro Max ของพี่ขาโดยเฉพาะ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             margin: 0; 
@@ -56,6 +56,7 @@
             background: transparent; color: #ccc; text-align: center; padding: 15px; 
             border-radius: 60px; font-weight: 600; border: 1px solid #333; text-decoration: none; 
         }
+        /* ส่วนของแมพ - เจนนี่ไม่แตะตามกฎเหล็กพี่ขา */
         .map-container { margin: 32px 0; border-radius: 28px; overflow: hidden; border: 1px solid #2a2a2a; }
         .footer-note { text-align: center; font-size: 12px; color: #555; margin-top: 24px; }
     </style>
@@ -107,10 +108,8 @@
 </div>
 
 <script>
-    // --- URL ของ Web App จาก Google Apps Script ---
     const API_URL = "https://script.google.com/macros/s/AKfycbyhgz12OXm9jX9RaDS7Vaek6b63pMibw0bh4AyoAzO9oSMamasxTIBoIFCAjlTigZwZ/exec";
 
-    // ฟังก์ชันดึงราคา (GET)
     async function fetchPrice() {
         const priceEl = document.getElementById("displayPrice");
         try {
@@ -131,7 +130,6 @@
         }
     }
 
-    // ฟังก์ชันจองด่วน (Fast Check-in)
     async function doFastCheckin() {
         const btn = document.getElementById('btnFastCheckin');
         btn.disabled = true;
@@ -176,11 +174,14 @@
         document.getElementById('btnFastCheckin').addEventListener('click', () => {
             Swal.fire({
                 title: 'จองเข้าพักคืนนี้?',
+                text: "ยืนยันการจองด่วนสำหรับคืนนี้คะพี่ขา",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'ตกลง',
-                cancelButtonText: 'ยกเลิก',
-                confirmButtonColor: '#fff',
+                confirmButtonText: 'ตกลง', // ฝั่งขวา (มวยต่อ)
+                cancelButtonText: 'ยกเลิก', // ฝั่งซ้าย (มวยรอง)
+                reverseButtons: true, // คำสั่งสลับปุ่มให้ถูกฝั่งตามหลัก UX
+                confirmButtonColor: '#007AFF', // สีฟ้า iOS (ฝ่ายน้ำเงินรีชาร์จ)
+                cancelButtonColor: '#FF3B30',  // สีแดง (ฝ่ายแดงนับแป็ด)
                 background: '#111',
                 color: '#fff'
             }).then((result) => {
