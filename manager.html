@@ -24,7 +24,7 @@ h2{margin-top:0;font-size:18px;border-bottom:1px solid #333;padding-bottom:15px;
 .weekend-btn{background:#400;color:#fff;border:1px solid #600;}
 .door-btn{background:#400;color:#fff;height:70px;font-size:20px;border:1px solid #600;}
 .line-btn{background:#111;color:#06C755;border:1px solid #222;margin-bottom:10px;text-decoration:none;display:block;text-align:center;line-height:45px;border-radius:12px;}
-.status-text{font-size:11px;color:#666;margin-top:-5px;margin-bottom:10px;padding-left:5px;}
+.status-text{font-size:10px;color:#555;margin-top:-5px;margin-bottom:10px;padding-left:5px;letter-spacing:0.5px;}
 </style>
 </head>
 <body>
@@ -46,21 +46,29 @@ h2{margin-top:0;font-size:18px;border-bottom:1px solid #333;padding-bottom:15px;
     </div>
 
     <div class="section">
-        <div class="section-title">💰 WEEKDAY PRICE (B1)</div>
+        <div class="section-title">📅 WEEKDAY CONTROL (MON-THU)</div>
+        <select id="weekdayDaySelect" class="date-selector">
+            <option value="weekdayAll">อัปเดตทั้ง 4 วัน (B1-E1)</option>
+            <option value="mon">เฉพาะวันจันทร์ (B1)</option>
+            <option value="tue">เฉพาะวันอังคาร (C1)</option>
+            <option value="wed">เฉพาะวันพุธ (D1)</option>
+            <option value="thu">เฉพาะวันพฤหัส (E1)</option>
+        </select>
         <div class="price-group">
             <input type="number" id="weekdayPrice" placeholder="...">
             <div class="fixed-unit">0.00 THB</div>
         </div>
+        <div id="weekdayStatus" class="status-text">จ: - | อ: - | พ: - | พฤ: -</div>
         <button class="btn primary" onclick="updatePrice('weekday')">UPDATE WEEKDAY</button>
     </div>
 
     <div class="section">
-        <div class="section-title" style="color:#ff4444;">🔥 WEEKEND PRICE CONTROL</div>
+        <div class="section-title" style="color:#ff4444;">🔥 WEEKEND CONTROL (FRI-SUN)</div>
         <select id="weekendDaySelect" class="date-selector">
-            <option value="all">อัปเดตทั้ง 3 วัน (C1-E1)</option>
-            <option value="fri">เฉพาะวันศุกร์ (C1)</option>
-            <option value="sat">เฉพาะวันเสาร์ (D1)</option>
-            <option value="sun">เฉพาะวันอาทิตย์ (E1)</option>
+            <option value="weekendAll">อัปเดตทั้ง 3 วัน (F1-H1)</option>
+            <option value="fri">เฉพาะวันศุกร์ (F1)</option>
+            <option value="sat">เฉพาะวันเสาร์ (G1)</option>
+            <option value="sun">เฉพาะวันอาทิตย์ (H1)</option>
         </select>
         <div class="price-group">
             <input type="number" id="weekendPrice" placeholder="...">
@@ -92,13 +100,13 @@ async function loadData() {
             });
         }
 
-        // ดึงค่าจริงจากชีทมาหาร 10 เพื่อแปะ Placeholder
-        document.getElementById("weekdayPrice").placeholder = Math.floor(data.weekday / 10);
+        // หยอดค่าจริงจากชีทหาร 10 ลง Placeholder
+        document.getElementById("weekdayPrice").placeholder = Math.floor(data.mon / 10);
         document.getElementById("weekendPrice").placeholder = Math.floor(data.fri / 10);
         
-        // แสดงสถานะ 3 วันตัวเล็กๆ
-        document.getElementById("weekendStatus").innerHTML = 
-            `ศุกร์: ${data.fri} | เสาร์: ${data.sat} | อาทิตย์: ${data.sun}`;
+        // แสดงสถานะตัวเล็กแยกตามฝั่ง
+        document.getElementById("weekdayStatus").innerHTML = `จ: ${data.mon} | อ: ${data.tue} | พ: ${data.wed} | พฤ: ${data.thu}`;
+        document.getElementById("weekendStatus").innerHTML = `ศุกร์: ${data.fri} | เสาร์: ${data.sat} | อาทิตย์: ${data.sun}`;
 
     } catch (e) { console.error(e); }
 }
@@ -107,14 +115,19 @@ async function updatePrice(mode) {
     let priceInput, action;
     if(mode === 'weekday') {
         priceInput = document.getElementById("weekdayPrice").value;
-        action = "updateWeekday";
+        let dayTarget = document.getElementById("weekdayDaySelect").value;
+        if(dayTarget === "weekdayAll") action = "updateWeekdayAll";
+        else if(dayTarget === "mon") action = "updateMon";
+        else if(dayTarget === "tue") action = "updateTue";
+        else if(dayTarget === "wed") action = "updateWed";
+        else if(dayTarget === "thu") action = "updateThu";
     } else {
         priceInput = document.getElementById("weekendPrice").value;
         let dayTarget = document.getElementById("weekendDaySelect").value;
-        if(dayTarget === "all") action = "updateWeekend";
-        else if(dayTarget === "fri") action = "updateFriday";
-        else if(dayTarget === "sat") action = "updateSaturday";
-        else if(dayTarget === "sun") action = "updateSunday";
+        if(dayTarget === "weekendAll") action = "updateWeekendAll";
+        else if(dayTarget === "fri") action = "updateFri";
+        else if(dayTarget === "sat") action = "updateSat";
+        else if(dayTarget === "sun") action = "updateSun";
     }
 
     if(!priceInput) {
