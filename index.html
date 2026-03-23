@@ -6,7 +6,7 @@
     <title>Aon Thonglor 7 - Premium Boutique Room</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* OLED Black Style - ออกแบบมาเพื่อ iPhone 13 Pro Max ของพี่ขาโดยเฉพาะ */
+        /* OLED Black Style */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             margin: 0; 
@@ -56,7 +56,19 @@
             background: transparent; color: #ccc; text-align: center; padding: 15px; 
             border-radius: 60px; font-weight: 600; border: 1px solid #333; text-decoration: none; 
         }
-        /* ส่วนของแมพ - เจนนี่ไม่แตะตามกฎเหล็กพี่ขา */
+
+        /* --- CSS พิเศษสำหรับแต่งปุ่ม Pop-up ตามสั่งพี่ขา --- */
+        .swal2-styled.btn-confirm-long {
+            width: 150px !important; /* ปุ่มน้ำเงินยาวกว่า (มวยต่อ) */
+            font-weight: 700 !important;
+            border-radius: 12px !important;
+        }
+        .swal2-styled.btn-cancel-short {
+            width: 100px !important; /* ปุ่มแดงสั้นกว่า (มวยรอง) */
+            border-radius: 12px !important;
+        }
+
+        /* แมพของพี่ - ห้ามแตะ */
         .map-container { margin: 32px 0; border-radius: 28px; overflow: hidden; border: 1px solid #2a2a2a; }
         .footer-note { text-align: center; font-size: 12px; color: #555; margin-top: 24px; }
     </style>
@@ -121,12 +133,9 @@
                     maximumFractionDigits: 2 
                 });
                 priceEl.innerText = price;
-                localStorage.setItem("cached_price", data.price);
             }
         } catch (e) {
             console.error("Fetch Error:", e);
-            const saved = localStorage.getItem("cached_price");
-            priceEl.innerText = saved ? parseFloat(saved).toLocaleString() : "1,251.21";
         }
     }
 
@@ -138,9 +147,7 @@
         try {
             const res = await fetch(`${API_URL}?action=getPrice`);
             const data = await res.json();
-            
-            const today = new Date();
-            const todayStr = today.toISOString().split('T')[0];
+            const todayStr = new Date().toISOString().split('T')[0];
             
             if (data.bookedDates && data.bookedDates.includes(todayStr)) {
                 Swal.fire({ title: 'ขออภัย', text: 'คืนนี้มีคนจองไปแล้วค่ะ', icon: 'error', background: '#111', color: '#fff' });
@@ -149,12 +156,9 @@
                 return;
             }
 
-            const tomorrow = new Date(today);
-            tomorrow.setDate(today.getDate() + 1);
-            
             const bookingObj = {
                 checkin: todayStr,
-                checkout: tomorrow.toISOString().split('T')[0],
+                checkout: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0],
                 totalPrice: data.price || "1251.21",
                 type: "Fast Check-in"
             };
@@ -174,16 +178,20 @@
         document.getElementById('btnFastCheckin').addEventListener('click', () => {
             Swal.fire({
                 title: 'จองเข้าพักคืนนี้?',
-                text: "ยืนยันการจองด่วนสำหรับคืนนี้คะพี่ขา",
+                text: "ยืนยันการจองด่วนสำหรับคืนนี้",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'ตกลง', // ฝั่งขวา (มวยต่อ)
-                cancelButtonText: 'ยกเลิก', // ฝั่งซ้าย (มวยรอง)
-                reverseButtons: true, // คำสั่งสลับปุ่มให้ถูกฝั่งตามหลัก UX
-                confirmButtonColor: '#007AFF', // สีฟ้า iOS (ฝ่ายน้ำเงินรีชาร์จ)
-                cancelButtonColor: '#FF3B30',  // สีแดง (ฝ่ายแดงนับแป็ด)
+                confirmButtonText: 'ตกลง',
+                cancelButtonText: 'ยกเลิก',
+                reverseButtons: true, // ตกลงอยู่ขวา (กดง่าย)
+                confirmButtonColor: '#007AFF', // สีฟ้า
+                cancelButtonColor: '#FF3B30',  // สีแดง
                 background: '#111',
-                color: '#fff'
+                color: '#fff',
+                customClass: {
+                    confirmButton: 'btn-confirm-long', // คลาสปุ่มยาว
+                    cancelButton: 'btn-cancel-short'   // คลาสปุ่มสั้น
+                }
             }).then((result) => {
                 if (result.isConfirmed) doFastCheckin();
             });
