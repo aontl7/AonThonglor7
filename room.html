@@ -4,32 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { background-color: #000; color: #fff; font-family: sans-serif; padding: 20px; text-align: center; }
+    body { background-color: #000; color: #fff; font-family: sans-serif; padding: 15px; text-align: center; }
     
-    /* Welcome: ขยายให้เด่น สวยๆ */
-    .welcome-section { margin: 10px 0 30px 0; border-bottom: 1px solid #222; padding-bottom: 20px; }
-    .welcome { color: #e0b0ff; letter-spacing: 4px; font-size: 1.8rem; font-weight: bold; }
-    .customer-name { font-size: 1.2rem; color: #888; margin-top: 5px; text-transform: uppercase; }
+    /* Welcome Section: กระชับที่สุด */
+    .welcome-section { margin: 5px 0 15px 0; border-bottom: 1px solid #222; padding-bottom: 10px; }
+    .welcome { color: #e0b0ff; letter-spacing: 3px; font-size: 1.5rem; font-weight: bold; }
+    .customer-name { font-size: 1rem; color: #888; text-transform: uppercase; }
     
-    /* Info Section: กระชับพื้นที่ */
-    .room-header { font-size: 3rem; font-weight: bold; color: #fff; margin: 0; }
-    .floor-info { color: #555; font-size: 1rem; margin-bottom: 15px; }
+    .room-header { font-size: 2.5rem; font-weight: bold; color: #fff; margin: 0; }
+    .floor-info { color: #555; font-size: 0.9rem; margin-bottom: 10px; }
     
-    .nav-box { border: 1px solid #303; padding: 12px; border-radius: 12px; margin-bottom: 25px; background: #101; color: #e0b0ff; font-size: 0.9rem; }
-    .light-dot { display: inline-block; width: 10px; height: 10px; background: purple; border-radius: 50%; box-shadow: 0 0 8px purple; margin-right: 5px; }
+    .nav-box { border: 1px solid #303; padding: 10px; border-radius: 10px; margin-bottom: 15px; background: #101; color: #e0b0ff; font-size: 0.85rem; }
+    .light-dot { display: inline-block; width: 8px; height: 8px; background: purple; border-radius: 50%; box-shadow: 0 0 8px purple; margin-right: 5px; }
 
-    /* Control Group */
-    .ac-control { background: #111; border: 1px solid #333; border-radius: 20px; padding: 15px; margin-bottom: 15px; }
-    .temp-display { font-size: 3.5rem; font-weight: bold; color: #e0b0ff; line-height: 1; margin: 10px 0; }
-    .temp-btn-group { display: flex; justify-content: center; gap: 25px; margin-bottom: 15px; }
-    .temp-btn { width: 60px; height: 60px; border-radius: 50%; border: 1px solid #e0b0ff; background: transparent; color: #e0b0ff; font-size: 2rem; cursor: pointer; }
-
-    .btn { width: 100%; padding: 18px; margin: 8px 0; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+    .btn { width: 100%; padding: 15px; margin: 5px 0; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; }
     .btn-door { background: #fff; color: #000; }
-    .btn-ac-on { background: #e0b0ff; color: #000; }
-    .btn-ac-off { background: #200; color: #f44; border: 1px solid #400; font-size: 0.9rem; padding: 12px; }
-    
-    label { display: block; margin-top: 20px; color: #444; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; }
+
+    /* AC Compact: บีบให้เล็กลงเพื่อประหยัดพื้นที่ */
+    .ac-control { background: #111; border: 1px solid #333; border-radius: 15px; padding: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-around; }
+    .temp-display { font-size: 2.5rem; font-weight: bold; color: #e0b0ff; }
+    .temp-btn { width: 45px; height: 45px; border-radius: 50%; border: 1px solid #e0b0ff; background: transparent; color: #e0b0ff; font-size: 1.5rem; cursor: pointer; }
+    .btn-ac-small { width: 80px; padding: 10px; font-size: 0.8rem; border-radius: 8px; }
+
+    label { display: block; margin-top: 15px; color: #444; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; }
   </style>
 </head>
 <body>
@@ -50,17 +47,19 @@
 
   <label>Air Conditioning</label>
   <div class="ac-control">
-    <button class="btn btn-ac-on" onclick="send('airOn')">POWER ON</button>
-    <div class="temp-display"><span id="temp">25</span>°C</div>
-    <div class="temp-btn-group">
+    <button class="btn btn-ac-small" style="background:#e0b0ff; color:#000;" onclick="send('airOn')">ON</button>
+    <div style="display: flex; align-items: center; gap: 15px;">
       <button class="temp-btn" onclick="changeTemp(-1)">−</button>
+      <div class="temp-display"><span id="temp">25</span></div>
       <button class="temp-btn" onclick="changeTemp(1)">+</button>
     </div>
-    <button class="btn btn-ac-off" onclick="send('airOff')">TURN OFF</button>
+    <button class="btn btn-ac-small" style="background:#200; color:#f44; border:1px solid #400;" onclick="send('airOff')">OFF</button>
   </div>
 
-  <label>Lighting</label>
-  <button class="btn" style="background:#111; color:#fff; border:1px solid #333;" onclick="send('lightToggle')">ON / OFF</button>
+  <label>Pathway Light (Coming Soon)</label>
+  <div style="height: 100px; border: 1px dashed #222; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: #333;">
+    พื้นที่สำหรับแถบสีและปุ่มปรับไฟ
+  </div>
 
   <script>
     let currentTemp = 25;
