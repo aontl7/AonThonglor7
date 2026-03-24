@@ -4,61 +4,83 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* ตั้งค่าสีหลักของห้องตรงนี้ (พี่เปลี่ยนตามห้องได้เลย เช่น purple, blue, green, yellow) */
+    :root { --room-color: purple; --room-glow: rgba(128, 0, 128, 0.5); }
+
     body { background-color: #000; color: #fff; font-family: sans-serif; padding: 15px; text-align: center; }
     
-    /* Welcome Section: กระชับที่สุด */
     .welcome-section { margin: 5px 0 15px 0; border-bottom: 1px solid #222; padding-bottom: 10px; }
-    .welcome { color: #e0b0ff; letter-spacing: 3px; font-size: 1.5rem; font-weight: bold; }
+    .welcome { color: var(--room-color); letter-spacing: 3px; font-size: 1.5rem; font-weight: bold; }
     .customer-name { font-size: 1rem; color: #888; text-transform: uppercase; }
     
-    .room-header { font-size: 2.5rem; font-weight: bold; color: #fff; margin: 0; }
+    .room-header { font-size: 2.5rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px var(--room-glow); margin: 0; }
     .floor-info { color: #555; font-size: 0.9rem; margin-bottom: 10px; }
     
-    .nav-box { border: 1px solid #303; padding: 10px; border-radius: 10px; margin-bottom: 15px; background: #101; color: #e0b0ff; font-size: 0.85rem; }
-    .light-dot { display: inline-block; width: 8px; height: 8px; background: purple; border-radius: 50%; box-shadow: 0 0 8px purple; margin-right: 5px; }
+    .nav-box { border: 1px solid var(--room-color); padding: 10px; border-radius: 10px; margin-bottom: 15px; background: #0a000a; color: var(--room-color); font-size: 0.85rem; }
 
     .btn { width: 100%; padding: 15px; margin: 5px 0; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; }
     .btn-door { background: #fff; color: #000; }
 
-    /* AC Compact: บีบให้เล็กลงเพื่อประหยัดพื้นที่ */
-    .ac-control { background: #111; border: 1px solid #333; border-radius: 15px; padding: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-around; }
-    .temp-display { font-size: 2.5rem; font-weight: bold; color: #e0b0ff; }
-    .temp-btn { width: 45px; height: 45px; border-radius: 50%; border: 1px solid #e0b0ff; background: transparent; color: #e0b0ff; font-size: 1.5rem; cursor: pointer; }
-    .btn-ac-small { width: 80px; padding: 10px; font-size: 0.8rem; border-radius: 8px; }
+    /* AC Section (Compact) */
+    .control-card { background: #111; border: 1px solid #333; border-radius: 15px; padding: 12px; margin-bottom: 10px; }
+    .ac-row { display: flex; align-items: center; justify-content: space-between; }
+    .temp-display { font-size: 2rem; font-weight: bold; color: var(--room-color); }
 
-    label { display: block; margin-top: 15px; color: #444; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; }
+    /* Yeelight Control (New!) */
+    .light-row { display: flex; gap: 10px; margin-top: 10px; }
+    .slider { width: 100%; height: 8px; border-radius: 5px; background: #333; outline: none; -webkit-appearance: none; margin: 15px 0; }
+    .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--room-color); cursor: pointer; box-shadow: 0 0 10px var(--room-color); }
+
+    label { display: block; margin-top: 10px; color: #444; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; text-align: left; }
   </style>
 </head>
 <body>
 
   <div class="welcome-section">
     <div class="welcome">WELCOME</div>
-    <div class="customer-name" id="cName">GUEST</div>
+    <div id="cName" class="customer-name">GUEST</div>
   </div>
 
   <div class="room-header">ROOM 101</div>
   <div class="floor-info">FLOOR 1</div>
   
-  <div class="nav-box">
-    <span class="light-dot"></span> เดินตาม <b style="text-decoration: underline;">ไฟสีม่วง</b>
-  </div>
+  <div class="nav-box">เดินตามไฟนำทางสีม่วง</div>
 
   <button class="btn btn-door" onclick="send('openDoor')">OPEN MAIN DOOR</button>
 
   <label>Air Conditioning</label>
-  <div class="ac-control">
-    <button class="btn btn-ac-small" style="background:#e0b0ff; color:#000;" onclick="send('airOn')">ON</button>
-    <div style="display: flex; align-items: center; gap: 15px;">
-      <button class="temp-btn" onclick="changeTemp(-1)">−</button>
-      <div class="temp-display"><span id="temp">25</span></div>
-      <button class="temp-btn" onclick="changeTemp(1)">+</button>
+  <div class="control-card">
+    <div class="ac-row">
+      <button onclick="send('airOn')" style="background:var(--room-color); border:none; padding:8px 15px; border-radius:5px; font-weight:bold;">ON</button>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button onclick="changeTemp(-1)" style="background:none; border:1px solid #444; color:#fff; width:35px; height:35px; border-radius:50%; font-size:1.2rem;">−</button>
+        <span class="temp-display"><span id="temp">25</span>°</span>
+        <button onclick="changeTemp(1)" style="background:none; border:1px solid #444; color:#fff; width:35px; height:35px; border-radius:50%; font-size:1.2rem;">+</button>
+      </div>
+      <button onclick="send('airOff')" style="background:#200; color:#f44; border:1px solid #400; padding:8px 15px; border-radius:5px; font-weight:bold;">OFF</button>
     </div>
-    <button class="btn btn-ac-small" style="background:#200; color:#f44; border:1px solid #400;" onclick="send('airOff')">OFF</button>
   </div>
 
-  <label>Pathway Light (Coming Soon)</label>
-  <div style="height: 100px; border: 1px dashed #222; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: #333;">
-    พื้นที่สำหรับแถบสีและปุ่มปรับไฟ
+  <label>Yeelight - Room Light</label>
+  <div class="control-card">
+    <div class="light-row">
+      <button class="btn" style="background:#222; color:#fff; margin:0;" onclick="send('lightOn')">ON</button>
+      <button class="btn" style="background:#000; color:#444; border:1px solid #222; margin:0;" onclick="send('lightOff')">OFF</button>
+    </div>
+    
+    <div style="text-align:left; padding-top:10px;">
+      <span style="font-size:0.7rem; color:#666;">BRIGHTNESS</span>
+      <input type="range" class="slider" min="1" max="100" value="80" onchange="send('lightBri', this.value)">
+    </div>
+
+    <div style="text-align:left;">
+      <span style="font-size:0.7rem; color:#666;">ROOM SCENE</span>
+      <div class="light-row">
+        <button onclick="send('lightColor', 'purple')" style="flex:1; background:purple; height:30px; border-radius:5px; border:none;"></button>
+        <button onclick="send('lightColor', 'blue')" style="flex:1; background:blue; height:30px; border-radius:5px; border:none;"></button>
+        <button onclick="send('lightColor', 'white')" style="flex:1; background:white; height:30px; border-radius:5px; border:none;"></button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -68,10 +90,10 @@
       if(currentTemp < 18) currentTemp = 18;
       if(currentTemp > 30) currentTemp = 30;
       document.getElementById('temp').innerText = currentTemp;
-      send('airSet' + currentTemp); 
+      send('airSet', currentTemp); 
     }
-    function send(action) {
-      const url = "URL_BACKEND?room=101&action=" + action;
+    function send(action, val = '') {
+      const url = `URL_BACKEND?room=101&action=${action}&value=${val}`;
       fetch(url, { mode: 'no-cors' });
     }
   </script>
