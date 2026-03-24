@@ -4,16 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* OLED Black: พื้นดำสนิท */
     body { background-color: #000; color: #fff; font-family: sans-serif; padding: 25px; text-align: center; }
-    .room-header { font-size: 3rem; font-weight: bold; color: #00ff00; margin-bottom: 5px; }
-    .nav-box { border: 1px solid #222; padding: 15px; border-radius: 15px; margin: 20px 0; background: #050505; }
     
+    /* เลขห้อง: เปลี่ยนจากเขียว Matrix เป็นขาวพรีเมียม หรือม่วงจางๆ */
+    .room-header { font-size: 3.5rem; font-weight: bold; color: #fff; margin-bottom: 5px; text-shadow: 0 0 10px rgba(128,0,128,0.5); }
+    
+    /* กล่องแจ้งสีไฟ: เน้นสีม่วงให้ชัดตามหน้างาน */
+    .nav-box { border: 1px solid #303; padding: 18px; border-radius: 15px; margin: 20px 0; background: #101; color: #e0b0ff; }
+    .light-dot { display: inline-block; width: 12px; height: 12px; background: purple; border-radius: 50%; box-shadow: 0 0 10px purple; margin-right: 5px; }
+
     .btn { width: 100%; padding: 20px; margin: 10px 0; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
     .btn-door { background: #fff; color: #000; }
     .btn-ctrl { background: #111; color: #fff; border: 1px solid #333; }
     
-    label { display: block; margin-top: 20px; color: #444; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
-    .light-color { color: red; font-weight: bold; } /* พี่แก้สีตามห้องได้เลย */
+    label { display: block; margin-top: 25px; color: #444; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
   </style>
 </head>
 <body>
@@ -22,7 +27,7 @@
   <div class="room-header">ROOM 101</div>
   
   <div class="nav-box">
-    ชั้น 1 | เดินตาม <span class="light-color">"ไฟสีแดง"</span> ไปที่ห้อง
+    <span class="light-dot"></span> ชั้น 1 | เดินตาม <b style="text-decoration: underline;">ไฟสีม่วง</b> เพื่อไปที่ห้อง
   </div>
 
   <button class="btn btn-door" onclick="send('openDoor')">OPEN MAIN DOOR</button>
@@ -38,7 +43,6 @@
 
   <script>
     function send(action) {
-      // ยิงไปที่ Apps Script Backend ของพี่ (ต้องแก้ URL เองนะพี่)
       const url = "URL_APPS_SCRIPT_ของพี่?room=101&action=" + action;
       fetch(url, { mode: 'no-cors' });
       console.log("Sent: " + action);
