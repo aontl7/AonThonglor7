@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { background-color: #000; color: #fff; font-family: sans-serif; padding: 25px; text-align: center; }
+    .room-header { font-size: 3rem; font-weight: bold; color: #00ff00; margin-bottom: 5px; }
+    .nav-box { border: 1px solid #222; padding: 15px; border-radius: 15px; margin: 20px 0; background: #050505; }
+    
+    .btn { width: 100%; padding: 20px; margin: 10px 0; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+    .btn-door { background: #fff; color: #000; }
+    .btn-ctrl { background: #111; color: #fff; border: 1px solid #333; }
+    
+    label { display: block; margin-top: 20px; color: #444; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
+    .light-color { color: red; font-weight: bold; } /* พี่แก้สีตามห้องได้เลย */
+  </style>
+</head>
+<body>
+
+  <div style="color: #666;">WELCOME, <span id="user">GUEST</span></div>
+  <div class="room-header">ROOM 101</div>
+  
+  <div class="nav-box">
+    ชั้น 1 | เดินตาม <span class="light-color">"ไฟสีแดง"</span> ไปที่ห้อง
+  </div>
+
+  <button class="btn btn-door" onclick="send('openDoor')">OPEN MAIN DOOR</button>
+
+  <label>Air Conditioning (Haier)</label>
+  <div style="display: flex; gap: 10px;">
+    <button class="btn btn-ctrl" onclick="send('air25')">25°C</button>
+    <button class="btn btn-ctrl" onclick="send('airOff')">OFF</button>
+  </div>
+
+  <label>Pathway Light (Yeelight)</label>
+  <button class="btn btn-ctrl" onclick="send('lightToggle')">ON / OFF</button>
+
+  <script>
+    function send(action) {
+      // ยิงไปที่ Apps Script Backend ของพี่ (ต้องแก้ URL เองนะพี่)
+      const url = "URL_APPS_SCRIPT_ของพี่?room=101&action=" + action;
+      fetch(url, { mode: 'no-cors' });
+      console.log("Sent: " + action);
+    }
+  </script>
+
+</body>
+</html>
