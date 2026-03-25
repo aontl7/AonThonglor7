@@ -13,25 +13,24 @@
 
     .btn { width: 100%; padding: 15px; margin: 5px 0; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
     .btn-door { background: #fff; color: #000; border: 2px solid var(--room-purple); }
-    .btn-door:active { background: var(--room-purple); transform: scale(0.98); }
+    .btn-door:active { background: var(--room-purple); transform: scale(0.95); }
 
-    .control-card { background: #111; border: 1px solid #444; border-radius: 15px; padding: 10px 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; height: 125px; }
+    .control-card { background: #111; border: 1px solid #444; border-radius: 15px; padding: 10px 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; height: 125px; box-sizing: border-box; }
     
     .display-box { width: 95px; text-align: left; display: flex; align-items: center; justify-content: flex-start; }
-    .temp-text { font-size: 3.8rem; font-weight: bold; color: var(--room-purple); line-height: 1; }
-    .degree-symbol { font-size: 1.8rem; vertical-align: top; margin-top: 5px; color: var(--room-purple); }
+    .temp-text { font-size: 3.5rem; font-weight: bold; color: var(--room-purple); line-height: 1; }
+    .degree-symbol { font-size: 1.5rem; vertical-align: top; color: var(--room-purple); }
     
-    .color-picker { width: 80px; height: 80px; border: none; background: transparent; cursor: pointer; -webkit-appearance: none; }
+    .color-picker { width: 70px; height: 70px; border: none; background: transparent; cursor: pointer; -webkit-appearance: none; }
     .color-picker::-webkit-color-swatch { border-radius: 50%; border: 3px solid #fff; }
     
-    .center-ctrl { width: 65px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
-    .small-btn { width: 48px; height: 45px; border-radius: 6px; border: 1.5px solid var(--room-purple); background: transparent; color: var(--room-purple); font-size: 1.5rem; font-weight: bold; cursor: pointer; }
-    .slider-v { -webkit-appearance: slider-vertical; width: 32px; height: 95px; background: #444; }
+    .center-ctrl { width: 60px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .small-btn { width: 45px; height: 45px; border-radius: 6px; border: 1.5px solid var(--room-purple); background: transparent; color: var(--room-purple); font-size: 1.5rem; font-weight: bold; }
 
-    .power-group { width: 145px; display: flex; flex-direction: column; gap: 10px; margin-left: 8px; }
-    .power-btn { width: 100%; height: 48px; border-radius: 8px; border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+    .power-group { width: 120px; display: flex; flex-direction: column; gap: 10px; }
+    .power-btn { width: 100%; height: 45px; border-radius: 8px; border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
 
-    label { display: block; margin-top: 20px; color: #bbb; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2.5px; text-align: left; border-left: 3px solid var(--room-purple); padding-left: 10px; }
+    label { display: block; margin-top: 20px; color: #bbb; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; text-align: left; border-left: 3px solid var(--room-purple); padding-left: 10px; }
 
     .comment-area { width: 100%; background: #111; border: 1px solid #444; border-radius: 10px; color: #fff; padding: 12px; font-size: 0.9rem; box-sizing: border-box; margin-top: 8px; resize: none; }
     .btn-send { background: var(--room-purple); color: #000; margin-top: 10px; }
@@ -39,8 +38,8 @@
 </head>
 <body>
 
-  <div class="room-header">ROOM 101</div>
-  <div class="floor-info">FLOOR 1</div>
+  <div class="room-header">ROOM 201</div>
+  <div class="floor-info">FLOOR 2</div>
   <div class="nav-box">เดินตามไฟนำทางสีม่วง</div>
 
   <button class="btn btn-door" onclick="send('openDoor')">OPEN MAIN DOOR</button>
@@ -61,20 +60,9 @@
   <label>Bed Lighting</label>
   <div class="control-card">
     <div class="display-box"><input type="color" class="color-picker" value="#e0b0ff" onchange="send('bedColor', this.value)"></div>
-    <div class="center-ctrl"><input type="range" class="slider-v" min="1" max="100" value="80" orient="vertical" onchange="send('bedBri', this.value)"></div>
-    <div class="power-group">
+    <div class="power-group" style="width: 145px;">
       <button class="power-btn" style="background: #fff; color: #000;" onclick="send('bedOn')">ON</button>
       <button class="power-btn" style="background: #222; color: #666; border: 1px solid #444;" onclick="send('bedOff')">OFF</button>
-    </div>
-  </div>
-
-  <label>Bath Lighting</label>
-  <div class="control-card">
-    <div class="display-box"><input type="color" class="color-picker" value="#ffc0cb" onchange="send('bathColor', this.value)"></div>
-    <div class="center-ctrl"><input type="range" class="slider-v" min="1" max="100" value="100" orient="vertical" onchange="send('bathBri', this.value)"></div>
-    <div class="power-group">
-      <button class="power-btn" style="background: #fff; color: #000;" onclick="send('bathOn')">ON</button>
-      <button class="power-btn" style="background: #222; color: #666; border: 1px solid #444;" onclick="send('bathOff')">OFF</button>
     </div>
   </div>
 
@@ -83,8 +71,8 @@
   <button class="btn btn-send" onclick="sendComment()">SEND FEEDBACK</button>
 
   <script>
-    // ใช้ Web App URL ที่พี่อ้นส่งมา
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyN9eYuXSN7bG1IOGpxdpak7uHyDlAZx6A84m5fdEidjxSfxa4b1Be_HcqqkscE5K1g/exec";
+    // เชื่อมต่อ Web App URL ตัวจบของพี่อ้น (fOsp)
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykfk7s6y7wGU0pcIt8HioHQnBKG_SMReQxps5otDGKfskmpwj1hdQo2oqaavX1fOsp/exec";
 
     let currentTemp = 25;
     function changeTemp(val) {
@@ -92,21 +80,21 @@
       if(currentTemp < 18) currentTemp = 18;
       if(currentTemp > 30) currentTemp = 30;
       document.getElementById('temp').innerText = currentTemp;
+      // ส่งคำสั่งปรับแอร์ห้อง 201
       send('airSet', currentTemp); 
     }
     
     function send(action, val = '') {
-      const url = APPS_SCRIPT_URL + "?room=101&action=" + action + "&value=" + val;
-      // สั่งงานแบบ background
-      fetch(url, { mode: 'no-cors' })
-        .catch(err => console.log("Error logic:", err));
+      // ส่งค่า room=201 ไปด้วยเพื่อให้ Apps Script รู้ว่าห้องไหนสั่งมา
+      const url = APPS_SCRIPT_URL + "?room=201&action=" + action + "&value=" + val;
+      fetch(url, { mode: 'no-cors' }).catch(err => console.log("Error:", err));
     }
 
     function sendComment() {
       const msg = document.getElementById('comment').value;
       if(!msg) return;
       send('comment', encodeURIComponent(msg));
-      alert("ทุกคำติชมของท่านจะถูกอ่านโดยเจ้าของโรงแรมเพียงผู้เดียว เพื่อนำไปพัฒนาระบบให้ดีขึ้นอย่างรวดเร็วที่สุด\nขอบคุณที่สละเวลา🙏");
+      alert("ทุกคำติชมของท่านจะถูกอ่านโดยเจ้าของโรงแรมเพียงผู้เดียว\nขอบคุณที่สละเวลา🙏");
       document.getElementById('comment').value = ''; 
     }
   </script>
